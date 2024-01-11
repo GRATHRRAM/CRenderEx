@@ -94,12 +94,13 @@ uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t Positio
 }
 
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
-    uint8_t outofborders = 0;
+    uint8_t rval = 0;
     for(uint32_t y = Rect.y; y < Rect.Height; ++y) {
         for(uint32_t x = Rect.x; x < Rect.Width; ++x) {
-            CR_RenderSetChar(Render, x, y, Rect.Char);
+           rval = CR_RenderSetChar(Render, x, y, Rect.Char);
         }
     }
+    return rval;
 }
 
 void CR_GetErrDesc(uint8_t Error) {
