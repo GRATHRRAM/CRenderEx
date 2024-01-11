@@ -14,6 +14,7 @@
 
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
+#define SIGOUTB 2 //out of borders
 
 typedef struct  CR_Render {
     char **Chars;
@@ -30,38 +31,42 @@ typedef struct CR_Rect {
 } CR_Rect;
 
 //If No Errors Returns 0 Else errsig (All Functions!!! if not void)
-int CR_AllocRender  (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Allocs space on heap for Render
-int CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Changes Resolution For Already Existing Render
+uint8_t CR_AllocRender  (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Allocs space on heap for Render
+uint8_t CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Changes Resolution For Already Existing Render
 
 void CR_RenderFill (CR_Render *Render, char Character); //Fills Render With Characters
 void CR_RenderPrint(CR_Render Render);                  //Prints Graphics/Display You know what i mean
 
+uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY,  char Character);//Replace Character at g
+
+void CR_GetErrDesc(uint8_t Error); //prints description of error
+
 
 //If you see any error please fix or report. Thanks!!!
-int CR_AllocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
+uint8_t CR_AllocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
         Render->Chars[i] = (char*) malloc(sizeof(char) * ResolutionX);
     
-    if(Render->Chars == NULL) return 1;
+    if(Render->Chars == NULL) return SIGOUTM;
     else {
         Render->ResolutionX = ResolutionX;
         Render->ResolutionY = ResolutionY;
     }
-    return 0;
+    return SIGNONE;
 }
 
-int CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
+uint8_t CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) realloc(Render->Chars ,sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
         Render->Chars[i] = (char*) realloc(Render->Chars ,sizeof(char) * ResolutionX);
     
-    if(Render->Chars == NULL) return 1;
+    if(Render->Chars == NULL) return SIGOUTM;
     else {
         Render->ResolutionX = ResolutionX;
         Render->ResolutionY = ResolutionY;
     }
-    return 0;
+    return SIGNONE;
 }
 
 void CR_RenderFill(CR_Render *Render, char Character) {
@@ -76,6 +81,21 @@ void CR_RenderPrint(CR_Render Render) {
     for(uint32_t y=0; y < Render.ResolutionY; ++y) {
         puts(Render.Chars[y]);
     }
+}
+
+uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character) {
+    if(Render->ResolutionX < PositionX ||
+       Render->ResolutionY < PositionY)
+        return SIGOUTB;
+    else Render->Chars[PositionY][PositionX] = Character;
+    return SIGNONE;
+}
+
+void CR_GetErrDesc(uint8_t Error) {
+    if(Error == 0) printf("CRender-> No Error. Youre Good!\n");                                     //SIGNONE 
+    if(Error == 1) printf("CRender-> Out Of Memory. Error Occurs Mostly When Allocating Render\n"); //SIGOUTM
+    if(Error == 2) printf("CRender-> Out Of Borders. (Warning) You haved tryed to do some thing out of render Borders\n"); //SIGOUTM
+    else printf("CRender-> Error Not Exist. Error Signal not Exitst! What did you do?\n");
 }
 
 #endif //!CRENDEREX_H
