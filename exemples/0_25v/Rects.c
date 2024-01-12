@@ -15,21 +15,23 @@
 #define clear "clear"
 #endif
 
-int main(void) {
+int main(void)
+{
     CR_Render Render;
     CR_AllocRender(&Render, ResolutionX, ResolutionY);
     CR_RenderFill(&Render, ' ');
     const char LooksArray[14] = "@#$%^&*-=~/|<>";
 
     srand(time(NULL));
-    while(1) {
+    while (1)
+    {
         system(clear);
         CR_Rect Rect;
         Rect.x = rand() % ResolutionX;
         Rect.y = rand() % ResolutionY;
-        Rect.Width  = rand() % ResolutionX / 2;
+        Rect.Width = rand() % ResolutionX / 2;
         Rect.Height = rand() % ResolutionY / 2;
-        Rect.Char   = LooksArray[rand() % 14];
+        Rect.Char = LooksArray[rand() % 14];
 
         CR_Rect2Render(&Render, Rect);
         CR_RenderPrint(Render);

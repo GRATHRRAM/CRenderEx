@@ -48,7 +48,7 @@ void CR_GetErrDesc(uint8_t Error); //prints description of error
 uint8_t CR_AllocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Chars[i] = (char*) malloc(sizeof(char) * ResolutionX);
+        Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
     
     if(Render->Chars == NULL) return SIGOUTM;
     else {
@@ -61,7 +61,7 @@ uint8_t CR_AllocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resolut
 uint8_t CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) realloc(Render->Chars ,sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Chars[i] = (char*) realloc(Render->Chars ,sizeof(char) * ResolutionX);
+        Render->Chars[i] = (char*) realloc(Render->Chars ,sizeof(char) * (ResolutionX + 1));
     
     if(Render->Chars == NULL) return SIGOUTM;
     else {
@@ -95,8 +95,8 @@ uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t Positio
 
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
     uint8_t rval = 0;
-    for(uint32_t y = Rect.y; y < Rect.Height; ++y) {
-        for(uint32_t x = Rect.x; x < Rect.Width; ++x) {
+    for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
+        for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
            rval = CR_RenderSetChar(Render, x, y, Rect.Char);
         }
     }
