@@ -1,5 +1,5 @@
 /*
-    CRenderEx - 0.25.5v
+    CRenderEx - 0.50v
     Creator: Grathrram
     start of dev: 12.01.2024
     License GNU GPL 3
@@ -15,6 +15,15 @@
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
 #define SIGOUTB 2 //out of borders
+#define SIGINPE 3  //Input Error
+
+#ifdef WIN32
+#include <windows.h>
+#define CR_ConsoleClear system("cls")
+#else
+#include <unistd.h>
+#define CR_ConsoleClear system("clear")
+#endif
 
 typedef struct  CR_Render {
     char **Chars;
@@ -39,6 +48,7 @@ void CR_RenderFill (CR_Render *Render, char Character); //Fills Render With Char
 void CR_RenderPrint(CR_Render Render);                  //Prints Graphics/Display You know what i mean
 
 uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY,  char Character);//Replace Character at given position
+uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character);//Draws a line
 
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
@@ -91,6 +101,30 @@ uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t Positio
         return SIGOUTB;
     else Render->Chars[PositionY][PositionX] = Character;
     return SIGNONE;
+}
+
+uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY,
+uint32_t EndX, uint32_t EndY, char Character) {
+    uint32_t dx = EndX-StartX;
+    uint32_t dy = EndY-StartY;
+    uint32_t x = StartX;
+    uint32_t y = StartY;
+    uint32_t p = 2 * dy-dx;
+    uint8_t  ReturnValue = 0;
+ 
+    while(x < EndX) {
+        if(p >= 0) {
+            ReturnValue = CR_RenderSetChar(Render, x, y, Character);
+            y = y+1;
+            p = p+2 * dy-2 * dx;
+        }   
+        else {
+            ReturnValue = CR_RenderSetChar(Render, x, y, Character);
+            p = p+2 * dy;
+        }
+        x = x+1;
+    }
+    return ReturnValue;
 }
 
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
