@@ -10,9 +10,13 @@
 #define ResolutionY 10
 
 #ifdef WIN32
+#include <windows.h>
 #define clear "cls"
+#define sleep Sleep(50)
 #else
+#include <unistd.h>
 #define clear "clear"
+#define sleep sleep(50)
 #endif
 
 int main(void)
@@ -35,7 +39,7 @@ int main(void)
 
         CR_Rect2Render(&Render, Rect);
         CR_RenderPrint(Render);
-        getchar();
+        sleep;
     }
 
     return 0;

@@ -87,7 +87,7 @@ void CR_RenderPrint(CR_Render Render) {
 
 uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character) {
     if(Render->ResolutionX < PositionX ||
-       Render->ResolutionY < PositionY)
+       Render->ResolutionY <= PositionY)
         return SIGOUTB;
     else Render->Chars[PositionY][PositionX] = Character;
     return SIGNONE;
