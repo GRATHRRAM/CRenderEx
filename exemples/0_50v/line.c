@@ -2,13 +2,11 @@
     For CRenderEx - 0.50v
     For CRInput - 1.0v
     Creator: Grathrram
-    start of dev: 12.01.2024
+    start of dev: 15.01.2024
     License GNU GPL 3
 */
 
 #include "CRenderEx.h"
-#include "CRInput.h"
-#include <stdbool.h>
 
 #define ResolutionX 40
 #define ResolutionY 10
@@ -16,40 +14,24 @@
 int main(void) {
     CR_Render Render;
     CR_AllocRender(&Render, ResolutionX, ResolutionY);
+    const char ArrayOfCharacters[] = "!@#$%^&*,./|?";
 
-    uint16_t StartX = 0, StartY = 0;
-    uint16_t EndX = 5, EndY = 1;
-    bool mode = false;
+    uint32_t StartX, StartY;
+    uint32_t EndX, EndY;
 
-    char ArrayOfCharacters[] = "!@#$%^&*,./|?";
-    uint8_t ArrayPointer = 0;
-
-    while(1) {
-        CR_RenderFill(&Render, ' ');
-        CR_RenderDrawLine(&Render,
-        StartX, StartY,
-        EndX, EndY,
-        ArrayOfCharacters[ArrayPointer]);
-
-        CR_ConsoleClear;
-        CR_RenderPrint(Render);
-
-        ArrayPointer++;
-        if(ArrayPointer > 12) ArrayPointer = 0;
-
-        char Input = (char) CRI_GetInput();
-
-        if(Input == 'a' && mode == false) StartX--;
-        if(Input == 'd' && mode == false) StartX++;
-        if(Input == 'w' && mode == false) StartY--;
-        if(Input == 's' && mode == false) StartY++;
-        if(Input == 'a' && mode == true)  EndX--;
-        if(Input == 'd' && mode == true)  EndX++;
-        if(Input == 'w' && mode == true)  EndY--;
-        if(Input == 's' && mode == true)  EndY++;
-
-        if(Input == 'f' || Input == 'm') mode = !mode;
-        if(Input == 'q') break;
-    }
+    printf("Resoluton X=40, Y=10\n");
+    printf("StartX-> ");
+    scanf("%d", &StartX);
+    printf("StartY-> ");
+    scanf("%d", &StartY);
+    printf("EndX-> ");
+    scanf("%d", &EndX);
+    printf("EndY-> ");
+    scanf("%d", &EndY);
     
+    CR_RenderFill(&Render, ' ');
+    CR_RenderDrawLine(&Render, StartX,
+    StartY, EndX, EndY, ArrayOfCharacters[rand() % 14]);
+    CR_RenderPrint(Render);
+    return 0;
 }

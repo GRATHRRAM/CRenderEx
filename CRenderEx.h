@@ -54,7 +54,7 @@ uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
-
+//Allocs space on heap for Render
 uint8_t CR_AllocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
@@ -68,6 +68,7 @@ uint8_t CR_AllocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resolut
     return SIGNONE;
 }
 
+//Changes Resolution For Already Existing Render
 uint8_t CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) realloc(Render->Chars ,sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
@@ -81,6 +82,7 @@ uint8_t CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resol
     return SIGNONE;
 }
 
+//Fills Render With Characters
 void CR_RenderFill(CR_Render *Render, char Character) {
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
@@ -89,12 +91,14 @@ void CR_RenderFill(CR_Render *Render, char Character) {
     }
 }
 
+//Prints Graphics/Display You know what i mean
 void CR_RenderPrint(CR_Render Render) {
     for(uint32_t y=0; y < Render.ResolutionY; ++y) {
         puts(Render.Chars[y]);
     }
 }
 
+//Replace Character at given position
 uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character) {
     if(Render->ResolutionX < PositionX ||
        Render->ResolutionY <= PositionY)
@@ -103,57 +107,82 @@ uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t Positio
     return SIGNONE;
 }
 
+//Draws a line
 uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY,
 uint32_t EndX, uint32_t EndY, char Character) {
-    uint32_t x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;  
-    dx = EndX - StartX;
-    dy = EndY - StartY;   
-    dx1 = abs(dx);
-    dy1 = abs(dy); 
-    px = 2 * dy1 - dx1;
-    py = 2 * dx1 - dy1;  
-    if (dy1 <= dx1) {    
-        if (dx >= 0) {
-            x = StartX; y = StartY; xe = EndX;
-        } else {
-            x = EndX; y = EndY; xe = StartX;
-        }        CR_RenderSetChar(Render, x , y, Character);
-        for (i = 0; x < xe; i++) {
-            x = x + 1;    
-            if (px < 0) {
-                px = px + 2 * dy1;
-            } else {
-                if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
-                    y = y + 1;
-                } else {
-                    y = y - 1;
-                }
-                px = px + 2 * (dy1 - dx1);
-            }      
-            CR_RenderSetChar(Render, x , y, Character);
-        }    } else {
-        if (dy >= 0) {
-            x = StartX; y = StartY; ye = EndY;
-        } else {
-            x = EndX; y = EndY; ye = StartY;
-        }        CR_RenderSetChar(Render, x , y, Character);
-        for (i = 0; y < ye; i++) {
-            y = y + 1;            
-            if (py <= 0) {
-                py = py + 2 * dx1;
-            } else {
-                if ((dx < 0 && dy<0) || (dx > 0 && dy > 0)) {
-                    x = x + 1;
-                } else {
-                    x = x - 1;
-                }
-                py = py + 2 * (dx1 - dy1);
-            }            
-            CR_RenderSetChar(Render, x , y, Character);
+    int dx,dy,Po;
+    int k=0;
+    CR_RenderSetChar(Render, StartX, StartY, Character);
+	int xk=StartX;
+	int yk=StartY;
+    uint8_t ReturnValue = 0;
+
+    dx=(EndX-StartX);
+    dy=(EndY-StartY);
+    if(dy<=dx&&dy>0) {
+	    dx=abs(dx);
+	    dy=abs(dy);
+ 	    Po=(2*dy)-dx;
+	    for(k=StartX;k<(int)EndX;k++) { 
+	        if(Po<0) {	
+                ReturnValue = CR_RenderSetChar(Render, ++xk, yk, Character);
+			    Po=Po+(2*dy);
+		    }
+	        else {
+                ReturnValue = CR_RenderSetChar(Render, ++xk, ++yk, Character);
+			    Po=Po+(2*dy)-(2*dx);
+		    }
+	  }
+	}
+    else if(dy>dx&&dy>0) {
+	    dx=abs(dx);
+	    dy=abs(dy);
+	    Po=(2*dx)-dy;
+	    for(k=StartY;k<(int)EndY;k++) { 
+	        if(Po<0) {	
+                ReturnValue = CR_RenderSetChar(Render, xk, ++yk, Character);
+			    Po=Po+(2*dx);
+		    }
+	        else {
+                ReturnValue =  CR_RenderSetChar(Render, ++xk, ++yk, Character);
+			    Po=Po+(2*dx)-(2*dy);
+		    }
+	    }			
+	}
+    else if(dy>=-dx) {
+        dx=abs(dx);
+        dy=abs(dy);
+        Po=(2*dy)-dx;
+        for(k=StartX;k<(int)EndX;k++) { 
+            if(Po<0) {	
+                ReturnValue = CR_RenderSetChar(Render, ++xk, yk, Character);
+                Po=Po+(2*dy);
+            }
+            else {
+                ReturnValue = CR_RenderSetChar(Render, ++xk, --yk, Character);
+                Po=Po+(2*dy)-(2*dx);
+            }
         }
     }
+    else if(dy<-dx) {
+        dx=abs(dx);
+        dy=abs(dy);
+        Po=(2*dy)-dx;
+        for(k=StartY;k>(int)EndY;k--) { 
+            if(Po<0) {	
+                ReturnValue = CR_RenderSetChar(Render, xk, --yk, Character);
+                Po=Po+(2*dx);
+            }
+            else {
+                ReturnValue = CR_RenderSetChar(Render, ++xk, --yk, Character);
+                Po=Po+(2*dx)-(2*dy);
+            }
+        }
+	}
+    return ReturnValue;
 }
 
+//Overwrites render with rect
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
     uint8_t rval = 0;
     for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
@@ -164,6 +193,7 @@ uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
     return rval;
 }
 
+//prints description of error
 void CR_GetErrDesc(uint8_t Error) {
     if(Error == 0) printf("CRender-> No Error. Youre Good!\n");                                     //SIGNONE 
     if(Error == 1) printf("CRender-> Out Of Memory. Error Occurs Mostly When Allocating Render\n"); //SIGOUTM

@@ -16,7 +16,7 @@
 #else
 #include <unistd.h>
 #define clear "clear"
-#define sleep sleep(50)
+#define sleep usleep(50 * 1000)
 #endif
 
 int main(void)
