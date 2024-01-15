@@ -1,6 +1,5 @@
 /*
     For CRenderEx - 0.50v
-    For CRInput - 1.0v
     Creator: Grathrram
     start of dev: 15.01.2024
     License GNU GPL 3

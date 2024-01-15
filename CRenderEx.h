@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
@@ -34,15 +35,23 @@ typedef struct  CR_Render {
 typedef struct CR_Rect {
     uint32_t x;
     uint32_t y;
-    uint32_t Height;
     uint32_t Width;
+    uint32_t Height;
     char Char;
 } CR_Rect;
 
+typedef struct CR_Text
+{
+    uint32_t x;
+    uint32_t y;
+    char *Text;
+    uint32_t MaxWidth;
+    uint32_t MaxHeight;
+} CR_Text;
+
 //If No Errors Returns 0 Else errsig (All Functions!!! if not void)
 //If you see any error please fix or report. Thanks!!!
-uint8_t CR_AllocRender  (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Allocs space on heap for Render
-uint8_t CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Changes Resolution For Already Existing Render
+uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
 
 void CR_RenderFill (CR_Render *Render, char Character); //Fills Render With Characters
 void CR_RenderPrint(CR_Render Render);                  //Prints Graphics/Display You know what i mean
@@ -50,34 +59,36 @@ void CR_RenderPrint(CR_Render Render);                  //Prints Graphics/Displa
 uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY,  char Character);//Replace Character at given position
 uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character);//Draws a line
 
+uint8_t CR_SetText(CR_Text *Text, char* Text2Set);//changes Text
+
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
+uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text);//Overwrites render with Text
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
-//Allocs space on heap for Render
-uint8_t CR_AllocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
-    Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
-    for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
-    
-    if(Render->Chars == NULL) return SIGOUTM;
-    else {
-        Render->ResolutionX = ResolutionX;
-        Render->ResolutionY = ResolutionY;
+//Sets Resolution of Render and allocs space 
+uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
+    if(Render->Chars == NULL){
+        Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
+        for(uint32_t i=0; i < ResolutionY; ++i)
+            Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
+        
+        if(Render->Chars == NULL) return SIGOUTM;
+        else {
+            Render->ResolutionX = ResolutionX;
+            Render->ResolutionY = ResolutionY;
+        }
     }
-    return SIGNONE;
-}
-
-//Changes Resolution For Already Existing Render
-uint8_t CR_ReallocRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
-    Render->Chars = (char**) realloc(Render->Chars ,sizeof(char*) * ResolutionY);
-    for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Chars[i] = (char*) realloc(Render->Chars ,sizeof(char) * (ResolutionX + 1));
-    
-    if(Render->Chars == NULL) return SIGOUTM;
     else {
-        Render->ResolutionX = ResolutionX;
-        Render->ResolutionY = ResolutionY;
+        Render->Chars = (char**) realloc(Render->Chars, sizeof(char*) * ResolutionY);
+        for(uint32_t i=0; i < ResolutionY; ++i)
+            Render->Chars[i] = (char*) realloc(Render->Chars, sizeof(char) * (ResolutionX + 1));
+        
+        if(Render->Chars == NULL) return SIGOUTM;
+        else {
+            Render->ResolutionX = ResolutionX;
+            Render->ResolutionY = ResolutionY;
+        }
     }
     return SIGNONE;
 }
@@ -100,7 +111,7 @@ void CR_RenderPrint(CR_Render Render) {
 
 //Replace Character at given position
 uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character) {
-    if(Render->ResolutionX < PositionX ||
+    if(Render->ResolutionX <= PositionX ||
        Render->ResolutionY <= PositionY)
         return SIGOUTB;
     else Render->Chars[PositionY][PositionX] = Character;
@@ -182,15 +193,48 @@ uint32_t EndX, uint32_t EndY, char Character) {
     return ReturnValue;
 }
 
+//changes Text
+uint8_t CR_SetText(CR_Text *Text, char* Text2Set) {
+    if(Text->Text == NULL) {
+        Text->Text = (char*) malloc(sizeof(char) * (strlen(Text2Set) + 1));
+        if(Text->Text == NULL) return SIGOUTM;
+        else Text->Text = Text2Set;
+    }
+    else if(strlen(Text2Set) >= strlen(Text->Text)){
+        Text->Text = Text2Set;
+    }
+    else {
+        Text->Text = (char*) realloc(Text->Text, sizeof(char) * (strlen(Text2Set) + 1));
+        if(Text->Text == NULL) return SIGOUTM;
+        else Text->Text = Text2Set;
+    }
+    return SIGNONE;
+}
+
 //Overwrites render with rect
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
-    uint8_t rval = 0;
+    uint8_t rval;
     for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
         for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
            rval = CR_RenderSetChar(Render, x, y, Rect.Char);
         }
     }
     return rval;
+}
+
+//Overwrites render with Text
+uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text) {
+    uint32_t CharCounter = 0;
+    uint8_t ReturnValue;
+
+    for(uint32_t y = Text.y; y - Text.y < Text.MaxHeight; ++y) {
+        for(uint32_t x = Text.x; x - Text.x < Text.MaxWidth; ++x) {
+            if(CharCounter == strlen(Text.Text)) return ReturnValue;
+            ReturnValue = CR_RenderSetChar(Render, x, y, Text.Text[CharCounter]);
+            CharCounter++;
+        }
+    }
+    return ReturnValue;
 }
 
 //prints description of error

@@ -14,6 +14,12 @@
 #include <termios.h> 
 #include <unistd.h> 
 
+//arrow values in ascii encoding
+#define CRI_UpArrow    65
+#define CRI_DownArrow  66
+#define CRI_LeftArrow  68
+#define CRI_RightArrow 67
+
 //Gets Input Without Enter
 int CRI_GetInput(void){
     int Char;   
