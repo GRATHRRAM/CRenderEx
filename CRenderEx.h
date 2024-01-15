@@ -15,7 +15,7 @@
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
 #define SIGOUTB 2 //out of borders
-#define SIGINPE 3  //Input Error
+#define SIGINPE 3 //Input Error
 
 #ifdef WIN32
 #include <windows.h>
@@ -105,26 +105,53 @@ uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t Positio
 
 uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY,
 uint32_t EndX, uint32_t EndY, char Character) {
-    uint32_t dx = EndX-StartX;
-    uint32_t dy = EndY-StartY;
-    uint32_t x = StartX;
-    uint32_t y = StartY;
-    uint32_t p = 2 * dy-dx;
-    uint8_t  ReturnValue = 0;
- 
-    while(x < EndX) {
-        if(p >= 0) {
-            ReturnValue = CR_RenderSetChar(Render, x, y, Character);
-            y = y+1;
-            p = p+2 * dy-2 * dx;
-        }   
-        else {
-            ReturnValue = CR_RenderSetChar(Render, x, y, Character);
-            p = p+2 * dy;
+    uint32_t x, y, dx, dy, dx1, dy1, px, py, xe, ye, i;  
+    dx = EndX - StartX;
+    dy = EndY - StartY;   
+    dx1 = abs(dx);
+    dy1 = abs(dy); 
+    px = 2 * dy1 - dx1;
+    py = 2 * dx1 - dy1;  
+    if (dy1 <= dx1) {    
+        if (dx >= 0) {
+            x = StartX; y = StartY; xe = EndX;
+        } else {
+            x = EndX; y = EndY; xe = StartX;
+        }        CR_RenderSetChar(Render, x , y, Character);
+        for (i = 0; x < xe; i++) {
+            x = x + 1;    
+            if (px < 0) {
+                px = px + 2 * dy1;
+            } else {
+                if ((dx < 0 && dy < 0) || (dx > 0 && dy > 0)) {
+                    y = y + 1;
+                } else {
+                    y = y - 1;
+                }
+                px = px + 2 * (dy1 - dx1);
+            }      
+            CR_RenderSetChar(Render, x , y, Character);
+        }    } else {
+        if (dy >= 0) {
+            x = StartX; y = StartY; ye = EndY;
+        } else {
+            x = EndX; y = EndY; ye = StartY;
+        }        CR_RenderSetChar(Render, x , y, Character);
+        for (i = 0; y < ye; i++) {
+            y = y + 1;            
+            if (py <= 0) {
+                py = py + 2 * dx1;
+            } else {
+                if ((dx < 0 && dy<0) || (dx > 0 && dy > 0)) {
+                    x = x + 1;
+                } else {
+                    x = x - 1;
+                }
+                py = py + 2 * (dx1 - dy1);
+            }            
+            CR_RenderSetChar(Render, x , y, Character);
         }
-        x = x+1;
     }
-    return ReturnValue;
 }
 
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
@@ -141,7 +168,8 @@ void CR_GetErrDesc(uint8_t Error) {
     if(Error == 0) printf("CRender-> No Error. Youre Good!\n");                                     //SIGNONE 
     if(Error == 1) printf("CRender-> Out Of Memory. Error Occurs Mostly When Allocating Render\n"); //SIGOUTM
     if(Error == 2) printf("CRender-> Out Of Borders. (Warning) You haved tryed to do some thing out of render Borders\n"); //SIGOUTM
-    else printf("CRender-> Error Not Exist. Error Signal not Exitst! What did you do?\n");
+    if(Error == 3) printf("CRender-> Input Error. Cant Get Input."); //SIGINPE
+    else printf("CRender-> Error Not Exist. Error Signal not Exitst!\n");
 }
 
 #endif //!CRENDEREX_H
