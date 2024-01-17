@@ -137,7 +137,7 @@ void CR_CRenderPrint(CR_CRender Render);                //Prints Graphics/Displa
 
 uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY,  char Character);//Replace Character at given position
 uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character);//Draws a line
-uint8_t CR_CRenderSetChar(CR_CRender *Render, uint32_t PositionX, uint32_t PositionY,  uint8_t Color);//Replace Character at given position
+uint8_t CR_CRenderSetPixel(CR_CRender *Render, uint32_t PositionX, uint32_t PositionY,  uint8_t Color);//Replace Character at given position
 
 uint8_t CR_SetText(CR_Text *Text, char* Text2Set);//changes Text
 
@@ -231,37 +231,38 @@ void CR_CRenderPrint(CR_CRender Render) {
     for(uint32_t y=0; y < Render.ResolutionY; ++y) {
         for(uint32_t x=0; x < Render.ResolutionX; ++x) {
             switch (Render.PixelColor[y][x]) {
-                case 0:  puts(CR_ColorTPR_Black   ); break;
-                case 1:  puts(CR_ColorTPR_Red     ); break;
-                case 2:  puts(CR_ColorTPR_Green   ); break;
-                case 3:  puts(CR_ColorTPR_Yellow  ); break;
-                case 4:  puts(CR_ColorTPR_Blue    ); break;
-                case 5:  puts(CR_ColorTPR_Purple  ); break;
-                case 6:  puts(CR_ColorTPR_Cyan    ); break;
-                case 7:  puts(CR_ColorTPR_White   ); break;
-                case 8:  puts(CR_ColorBold_Black  ); break;
-                case 9:  puts(CR_ColorBold_Red    ); break;
-                case 10: puts(CR_ColorBold_Green  ); break;
-                case 11: puts(CR_ColorBold_Yellow ); break;
-                case 12: puts(CR_ColorBold_Blue   ); break;
-                case 13: puts(CR_ColorBold_Purple ); break;
-                case 14: puts(CR_ColorBold_Cyan   ); break;
-                case 15: puts(CR_ColorBold_White  ); break;
-                case 16: puts(CR_ColorBackG_Black ); break;
-                case 17: puts(CR_ColorBackG_Red   ); break;
-                case 18: puts(CR_ColorBackG_Green ); break;
-                case 19: puts(CR_ColorBackG_Yellow); break;
-                case 20: puts(CR_ColorBackG_Blue  ); break;
-                case 21: puts(CR_ColorBackG_Purple); break;
-                case 22: puts(CR_ColorBackG_Cyan  ); break;
-                case 23: puts(CR_ColorBackG_White ); break;
+                case 0:  printf("%c",CR_ColorTPR_Black); break;
+                case 1:  printf("%c",CR_ColorTPR_Red     ); break;
+                case 2:  printf("%c",CR_ColorTPR_Green   ); break;
+                case 3:  printf("%c",CR_ColorTPR_Yellow  ); break;
+                case 4:  printf("%c",CR_ColorTPR_Blue    ); break;
+                case 5:  printf("%c",CR_ColorTPR_Purple  ); break;
+                case 6:  printf("%c",CR_ColorTPR_Cyan    ); break;
+                case 7:  printf("%c",CR_ColorTPR_White   ); break;
+                case 8:  printf("%c",CR_ColorBold_Black  ); break;
+                case 9:  printf("%c",CR_ColorBold_Red    ); break;
+                case 10: printf("%c",CR_ColorBold_Green  ); break;
+                case 11: printf("%c",CR_ColorBold_Yellow ); break;
+                case 12: printf("%c",CR_ColorBold_Blue   ); break;
+                case 13: printf("%c",CR_ColorBold_Purple ); break;
+                case 14: printf("%c",CR_ColorBold_Cyan   ); break;
+                case 15: printf("%c",CR_ColorBold_White  ); break;
+                case 16: printf("%c",CR_ColorBackG_Black ); break;
+                case 17: printf("%c",CR_ColorBackG_Red   ); break;
+                case 18: printf("%c",CR_ColorBackG_Green ); break;
+                case 19: printf("%c",CR_ColorBackG_Yellow); break;
+                case 20: printf("%c",CR_ColorBackG_Blue  ); break;
+                case 21: printf("%c",CR_ColorBackG_Purple); break;
+                case 22: printf("%c",CR_ColorBackG_Cyan  ); break;
+                case 23: printf("%c",CR_ColorBackG_White ); break;
                 
                 default:
-                    puts(CR_ColorTPR_White);
+                    printf("%c",CR_ColorTPR_White);
                 break;
             }
             putchar(Render.Filler);
         }
+        putchar('\n');
     }
 }
 
@@ -350,7 +351,7 @@ uint32_t EndX, uint32_t EndY, char Character) {
 }
 
 //Replace Color at given position
-uint8_t CR_CRenderSetChar(CR_CRender *Render, uint32_t PositionX, uint32_t PositionY, uint8_t Color) {
+uint8_t CR_CRenderSetPixel(CR_CRender *Render, uint32_t PositionX, uint32_t PositionY, uint8_t Color) {
     if(Render->ResolutionX <= PositionX ||
        Render->ResolutionY <= PositionY)
         return SIGOUTB;
