@@ -1,5 +1,5 @@
 /*
-    For CRenderEx - 0.50v
+    For CRenderEx - 0.50.5v
     Creator: Grathrram
     start of dev: 15.01.2024
     License GNU GPL 3
@@ -12,7 +12,7 @@
 
 int main(void) {
     CR_Render Render;
-    CR_AllocRender(&Render, ResolutionX, ResolutionY);
+    CR_InitRender(&Render, ResolutionX, ResolutionY);
     const char ArrayOfCharacters[] = "!@#$%^&*,./|?";
 
     uint32_t StartX, StartY;
