@@ -51,7 +51,8 @@ typedef struct CR_Text
 
 //If No Errors Returns 0 Else errsig (All Functions!!! if not void)
 //If you see any error please fix or report. Thanks!!!
-uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
+uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
+uint8_t CR_SetRender (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY);
 
 void CR_RenderFill (CR_Render *Render, char Character); //Fills Render With Characters
 void CR_RenderPrint(CR_Render Render);                  //Prints Graphics/Display You know what i mean
@@ -67,28 +68,28 @@ uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text);//Overwrites render with
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
 //Sets Resolution of Render and allocs space 
-uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
-    if(Render->Chars == NULL){
-        Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
-        for(uint32_t i=0; i < ResolutionY; ++i)
-            Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
+uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
+    Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
+    for(uint32_t i=0; i < ResolutionY; ++i)
+        Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
         
-        if(Render->Chars == NULL) return SIGOUTM;
-        else {
-            Render->ResolutionX = ResolutionX;
-            Render->ResolutionY = ResolutionY;
-        }
-    }
+    if(Render->Chars == NULL) return SIGOUTM;
     else {
-        Render->Chars = (char**) realloc(Render->Chars, sizeof(char*) * ResolutionY);
-        for(uint32_t i=0; i < ResolutionY; ++i)
-            Render->Chars[i] = (char*) realloc(Render->Chars, sizeof(char) * (ResolutionX + 1));
+        Render->ResolutionX = ResolutionX;
+        Render->ResolutionY = ResolutionY;
+    }
+    return SIGNONE;
+}
+
+uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
+    Render->Chars = (char**) realloc(Render->Chars, sizeof(char*) * ResolutionY);
+    for(uint32_t i=0; i < ResolutionY; ++i)
+        Render->Chars[i] = (char*) realloc(Render->Chars, sizeof(char) * (ResolutionX + 1));
         
-        if(Render->Chars == NULL) return SIGOUTM;
-        else {
-            Render->ResolutionX = ResolutionX;
-            Render->ResolutionY = ResolutionY;
-        }
+    if(Render->Chars == NULL) return SIGOUTM;
+    else {
+        Render->ResolutionX = ResolutionX;
+        Render->ResolutionY = ResolutionY;
     }
     return SIGNONE;
 }
