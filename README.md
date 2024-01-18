@@ -1,3 +1,5 @@
+
+https://github.com/scriptguy1/CRenderEx/assets/101575465/e906259e-feb0-4872-9265-8726fc410310
 # CRenderEx
 ## CRenderEx -> C(Console)Render(Graphics)Ex(Expanded)
 ### CRenderEx Its a lib for Simplyfing Basic Grapics in Terminal
@@ -11,4 +13,4 @@ https://github.com/scriptguy1/CRenderEx/assets/101575465/1d420656-5f3d-4f12-aa92
 
 
 # Recter.c (CRenderEx 1.0-alpha) Windows 10 cmd (Slowed By Code)
-https://github.com/scriptguy1/CRenderEx/assets/101575465/a36c7d24-c464-41c8-a9dc-b20f262b1303
+Uploading win_1.mp4…
