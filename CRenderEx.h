@@ -60,8 +60,8 @@ typedef struct CR_CRender {
 typedef struct CR_Rect {
     uint32_t x;
     uint32_t y;
-    uint32_t Width;
-    uint32_t Height;
+    int32_t Width;
+    int32_t Height;
     char Char;
     CR_Color Color;
 } CR_Rect;
@@ -129,7 +129,7 @@ uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resolutio
 }
 
 uint8_t CR_InitCRender(CR_CRender *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
-    Render->Pixel = (CR_Color**) malloc(sizeof(CR_Color*) * ResolutionY);
+    Render->Pixel  = (CR_Color**) malloc(sizeof(CR_Color*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
         Render->Pixel[i] = (CR_Color*) malloc(sizeof(CR_Color) * (ResolutionX + 1));
         
@@ -187,7 +187,7 @@ void CR_CRenderPrint(CR_CRender Render, uint8_t backGround) {
             printf("\x1b[%d;2;%d;%d;%dm", backGround, Render.Pixel[y][x].Red,
             Render.Pixel[y][x].Green, Render.Pixel[y][x].Blue);
             putchar(Render.Filler);
-            printf("\e[0m");
+            printf("\x1b[0m");
         }
         putchar('\n');
     } 
@@ -391,9 +391,32 @@ uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
 
 uint8_t CR_Rect2CRender(CR_CRender *Render, CR_Rect Rect) {
     uint8_t rval;
-    for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
-        for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
-           rval = CR_CRenderSetPixel(Render, x, y, Rect.Color);
+    if(Rect.Width < 0 && Rect.Height < 0){
+        for(int32_t y = Rect.y; Rect.Height > y - Rect.y; --y) {
+            for(int32_t x = Rect.x; Rect.Width > x - Rect.x; --x) {
+                rval = CR_CRenderSetPixel(Render, x, y, Rect.Color);
+            }
+        }
+    }
+    else if(Rect.Width < 0) {
+        for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
+            for(int32_t x = Rect.x; Rect.Width > x - Rect.x; --x) {
+                rval = CR_CRenderSetPixel(Render, x, y, Rect.Color);
+            }
+        }
+    }
+    else if(Rect.Height < 0) {
+        for(int32_t y = Rect.y; Rect.Height > y - Rect.y; --y) {
+            for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
+                rval = CR_CRenderSetPixel(Render, x, y, Rect.Color);
+            }
+        }
+    }
+    else {
+        for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
+            for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
+                rval = CR_CRenderSetPixel(Render, x, y, Rect.Color);
+            }
         }
     }
     return rval;
