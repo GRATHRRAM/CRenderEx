@@ -95,18 +95,15 @@ uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resoluti
     Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
         Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
-        
     if(Render->Chars == NULL) return SIGOUTM;
 
     Render->Pixel  = (CR_Color**) malloc(sizeof(CR_Color*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Pixel[i] = (CR_Color*) malloc(sizeof(CR_Color) * (ResolutionX + 1));
-        
+        Render->Pixel[i] = (CR_Color*) malloc(sizeof(CR_Color) * (ResolutionX + 1));      
     if(Render->Pixel == NULL) return SIGOUTM;
-    else {
-        Render->ResolutionX = ResolutionX;
-        Render->ResolutionY = ResolutionY;
-    }
+    
+    Render->ResolutionX = ResolutionX;
+    Render->ResolutionY = ResolutionY;
     return SIGNONE;
 }
 
@@ -120,12 +117,10 @@ uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resolutio
     Render->Pixel = (CR_Color**) realloc(Render->Pixel, sizeof(CR_Color*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
         Render->Pixel[i] = (CR_Color*) realloc(Render->Pixel, sizeof(CR_Color) * (ResolutionX + 1));
-        
     if(Render->Pixel == NULL) return SIGOUTM;
-    else {
-        Render->ResolutionX = ResolutionX;
-        Render->ResolutionY = ResolutionY;
-    }
+
+    Render->ResolutionX = ResolutionX;
+    Render->ResolutionY = ResolutionY;
     return SIGNONE;
 }
 
