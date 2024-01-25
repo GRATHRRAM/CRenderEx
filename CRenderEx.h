@@ -35,27 +35,24 @@
 #define CR_Color_NoBackG 38
 #define CR_Color_BackG   48
 
+typedef struct CR_Vector2i {
+    int32_t x;
+    int32_t y;
+} CR_Vector2i;
+
 typedef struct CR_Color {
     uint8_t Red;
     uint8_t Green;
     uint8_t Blue;
+    uint8_t draw;
 } CR_Color;
 
-//Character Render
-typedef struct  CR_Render {
+typedef struct CR_Render {
+    CR_Color **Pixel;
     char **Chars;
     uint32_t ResolutionX;
     uint32_t ResolutionY;
 } CR_Render;
-
-//Color Render
-typedef struct CR_CRender {
-    CR_Color **Pixel;
-    uint32_t ResolutionX;
-    uint32_t ResolutionY;
-    char **Chars;
-} CR_CRender;
-
 
 typedef struct CR_Rect {
     uint32_t x;
@@ -79,56 +76,22 @@ typedef struct CR_Text
 //If you see any error please fix or report. Thanks!!!
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
 uint8_t CR_SetRender (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); ////use if render alrady allocated
-uint8_t CR_InitCRender(CR_CRender *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
-uint8_t CR_SetCRender (CR_CRender *Render, uint32_t ResolutionX, uint32_t ResolutionY); ////use if render alrady allocated
 
-void CR_RenderFill (CR_Render *Render, char Character); //Fills Render With Characters
-void CR_CRenderFill(CR_CRender *Render, char Character, CR_Color Color); //Fills Render With Color
-void CR_RenderPrint(CR_Render Render);                  //Prints Graphics/Display You know what i mean
-void CR_CRenderPrint(CR_CRender Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
+void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
+void CR_RenderPrint(CR_Render Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
 
-uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY,  char Character);//Replace Character at given position
-uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character);//Draws a line
-uint8_t CR_CRenderDrawLine(CR_CRender *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
-uint8_t CR_CRenderSetPixel(CR_CRender *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
+uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
+uint8_t CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
 
 uint8_t CR_SetText(CR_Text *Text, char* Text2Set);//changes Text
 
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
-uint8_t CR_Rect2CRender(CR_CRender *Render, CR_Rect Rect);//Overwrites render with rect
 uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text);//Overwrites render with Text
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
-//Sets Resolution of Render and allocs space 
+
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
-    Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
-    for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
-        
-    if(Render->Chars == NULL) return SIGOUTM;
-    else {
-        Render->ResolutionX = ResolutionX;
-        Render->ResolutionY = ResolutionY;
-    }
-    return SIGNONE;
-}
-
-//use if render alrady allocated
-uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
-    Render->Chars = (char**) realloc(Render->Chars, sizeof(char*) * ResolutionY);
-    for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Chars[i] = (char*) realloc(Render->Chars[i], sizeof(char) * (ResolutionX + 1));
-        
-    if(Render->Chars == NULL) return SIGOUTM;
-    else {
-        Render->ResolutionX = ResolutionX;
-        Render->ResolutionY = ResolutionY;
-    }
-    return SIGNONE;
-}
-
-uint8_t CR_InitCRender(CR_CRender *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
         Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
@@ -148,7 +111,7 @@ uint8_t CR_InitCRender(CR_CRender *Render, uint32_t ResolutionX, uint32_t Resolu
 }
 
 //use if render alrady allocated
-uint8_t CR_SetCRender(CR_CRender *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
+uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) realloc(Render->Chars, sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
         Render->Chars[i] = (char*) realloc(Render->Chars[i], sizeof(char) * (ResolutionX + 1));
@@ -166,56 +129,33 @@ uint8_t CR_SetCRender(CR_CRender *Render, uint32_t ResolutionX, uint32_t Resolut
     return SIGNONE;
 }
 
-//Fills Render With Characters
-void CR_RenderFill(CR_Render *Render, char Character) {
-    for(uint32_t y=0; y < Render->ResolutionY; ++y) {
-        for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            Render->Chars[y][x] = Character;
-        }
-    }
-}
-
 //Fills Render With Colors
-void CR_CRenderFill(CR_CRender *Render, char Character, CR_Color Color) {
+void CR_RenderFill(CR_Render *Render, char Character, CR_Color Color) {
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            Render->Pixel[y][x] = Color;
             Render->Chars[y][x] = Character;
+            Render->Pixel[y][x] = Color;
         }
     }
 }
 
 //Prints Graphics/Display You know what i mean
-void CR_RenderPrint(CR_Render Render) {
-    for(uint32_t y=0; y < Render.ResolutionY; ++y) {
-        puts(Render.Chars[y]);
-    }
-}
-
-//Prints Graphics/Display You know what i mean
-void CR_CRenderPrint(CR_CRender Render, uint8_t backGround) {
+void CR_RenderPrint(CR_Render Render, uint8_t backGround) {
     for(uint32_t y=0; y < Render.ResolutionY; ++y) {
         for(uint32_t x=0; x < Render.ResolutionX; ++x) {//"\x1b[${bg};2;${red};${green};${blue}m\n"
-            printf("\x1b[%d;2;%d;%d;%dm", backGround, Render.Pixel[y][x].Red,
-            Render.Pixel[y][x].Green, Render.Pixel[y][x].Blue);
-            putchar(Render.Chars[y][x]);
+            if(Render.Pixel[y][x].draw) {
+                printf("\x1b[%d;2;%d;%d;%dm", backGround, Render.Pixel[y][x].Red,
+                Render.Pixel[y][x].Green, Render.Pixel[y][x].Blue);
+            }
+            printf("%c", Render.Chars[y][x]);
             printf("\x1b[0m");
         }
         putchar('\n');
-    } 
-}
-
-//Replace Character at given position
-uint8_t CR_RenderSetChar(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character) {
-    if(Render->ResolutionX <= PositionX ||
-       Render->ResolutionY <= PositionY)
-        return SIGOUTB;
-    else Render->Chars[PositionY][PositionX] = Character;
-    return SIGNONE;
+    }
 }
 
 //Replace Color and char at given position
-uint8_t CR_CRenderSetPixel(CR_CRender *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color) {
+uint8_t CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color) {
     if(Render->ResolutionX <= PositionX ||
        Render->ResolutionY <= PositionY)
         return SIGOUTB;
@@ -224,86 +164,12 @@ uint8_t CR_CRenderSetPixel(CR_CRender *Render, uint32_t PositionX, uint32_t Posi
     return SIGNONE;
 }
 
-//Draws a line
-uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY,
-uint32_t EndX, uint32_t EndY, char Character) {
-    int dx,dy,Po;
-    int k=0;
-    CR_RenderSetChar(Render, StartX, StartY, Character);
-	int xk=StartX;
-	int yk=StartY;
-    uint8_t ReturnValue = 0;
 
-    dx=(EndX-StartX);
-    dy=(EndY-StartY);
-    if(dy<=dx&&dy>0) {
-	    dx=abs(dx);
-	    dy=abs(dy);
- 	    Po=(2*dy)-dx;
-	    for(k=StartX;k<(int)EndX;k++) { 
-	        if(Po<0) {	
-                ReturnValue = CR_RenderSetChar(Render, ++xk, yk, Character);
-			    Po=Po+(2*dy);
-		    }
-	        else {
-                ReturnValue = CR_RenderSetChar(Render, ++xk, ++yk, Character);
-			    Po=Po+(2*dy)-(2*dx);
-		    }
-	  }
-	}
-    else if(dy>dx&&dy>0) {
-	    dx=abs(dx);
-	    dy=abs(dy);
-	    Po=(2*dx)-dy;
-	    for(k=StartY;k<(int)EndY;k++) { 
-	        if(Po<0) {	
-                ReturnValue = CR_RenderSetChar(Render, xk, ++yk, Character);
-			    Po=Po+(2*dx);
-		    }
-	        else {
-                ReturnValue =  CR_RenderSetChar(Render, ++xk, ++yk, Character);
-			    Po=Po+(2*dx)-(2*dy);
-		    }
-	    }			
-	}
-    else if(dy>=-dx) {
-        dx=abs(dx);
-        dy=abs(dy);
-        Po=(2*dy)-dx;
-        for(k=StartX;k<(int)EndX;k++) { 
-            if(Po<0) {	
-                ReturnValue = CR_RenderSetChar(Render, ++xk, yk, Character);
-                Po=Po+(2*dy);
-            }
-            else {
-                ReturnValue = CR_RenderSetChar(Render, ++xk, --yk, Character);
-                Po=Po+(2*dy)-(2*dx);
-            }
-        }
-    }
-    else if(dy<-dx) {
-        dx=abs(dx);
-        dy=abs(dy);
-        Po=(2*dy)-dx;
-        for(k=StartY;k>(int)EndY;k--) { 
-            if(Po<0) {	
-                ReturnValue = CR_RenderSetChar(Render, xk, --yk, Character);
-                Po=Po+(2*dx);
-            }
-            else {
-                ReturnValue = CR_RenderSetChar(Render, ++xk, --yk, Character);
-                Po=Po+(2*dx)-(2*dy);
-            }
-        }
-	}
-    return ReturnValue;
-}
-
-uint8_t CR_CRenderDrawLine(CR_CRender *Render, uint32_t StartX, uint32_t StartY, 
+uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, 
 uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
     int dx,dy,Po;
     int k=0;
-    CR_CRenderSetPixel(Render, StartX, StartY, Character, Color);
+    CR_RenderSetPixel(Render, StartX, StartY, Character, Color);
 	int xk=StartX;
 	int yk=StartY;
     uint8_t ReturnValue = 0;
@@ -316,11 +182,11 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
  	    Po=(2*dy)-dx;
 	    for(k=StartX;k<(int)EndX;k++) { 
 	        if(Po<0) {	
-                ReturnValue = CR_CRenderSetPixel(Render, ++xk, yk, Character, Color);
+                ReturnValue = CR_RenderSetPixel(Render, ++xk, yk, Character, Color);
 			    Po=Po+(2*dy);
 		    }
 	        else {
-                ReturnValue = CR_CRenderSetPixel(Render, ++xk, ++yk, Character, Color);
+                ReturnValue = CR_RenderSetPixel(Render, ++xk, ++yk, Character, Color);
 			    Po=Po+(2*dy)-(2*dx);
 		    }
 	  }
@@ -331,11 +197,11 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
 	    Po=(2*dx)-dy;
 	    for(k=StartY;k<(int)EndY;k++) { 
 	        if(Po<0) {	
-                ReturnValue = CR_CRenderSetPixel(Render, xk, ++yk, Character, Color);
+                ReturnValue = CR_RenderSetPixel(Render, xk, ++yk, Character, Color);
 			    Po=Po+(2*dx);
 		    }
 	        else {
-                ReturnValue =  CR_CRenderSetPixel(Render, ++xk, ++yk, Character, Color);
+                ReturnValue =  CR_RenderSetPixel(Render, ++xk, ++yk, Character, Color);
 			    Po=Po+(2*dx)-(2*dy);
 		    }
 	    }			
@@ -346,11 +212,11 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
         Po=(2*dy)-dx;
         for(k=StartX;k<(int)EndX;k++) { 
             if(Po<0) {	
-                ReturnValue = CR_CRenderSetPixel(Render, ++xk, yk, Character, Color);
+                ReturnValue = CR_RenderSetPixel(Render, ++xk, yk, Character, Color);
                 Po=Po+(2*dy);
             }
             else {
-                ReturnValue = CR_CRenderSetPixel(Render, ++xk, --yk, Character, Color);
+                ReturnValue = CR_RenderSetPixel(Render, ++xk, --yk, Character, Color);
                 Po=Po+(2*dy)-(2*dx);
             }
         }
@@ -361,11 +227,11 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
         Po=(2*dy)-dx;
         for(k=StartY;k>(int)EndY;k--) { 
             if(Po<0) {	
-                ReturnValue = CR_CRenderSetPixel(Render, xk, --yk, Character, Color);
+                ReturnValue = CR_RenderSetPixel(Render, xk, --yk, Character, Color);
                 Po=Po+(2*dx);
             }
             else {
-                ReturnValue = CR_CRenderSetPixel(Render, ++xk, --yk, Character, Color);
+                ReturnValue = CR_RenderSetPixel(Render, ++xk, --yk, Character, Color);
                 Po=Po+(2*dx)-(2*dy);
             }
         }
@@ -396,40 +262,7 @@ uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
     uint8_t rval;
     for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
         for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
-           rval = CR_RenderSetChar(Render, x, y, Rect.Char);
-        }
-    }
-    return rval;
-}
-
-uint8_t CR_Rect2CRender(CR_CRender *Render, CR_Rect Rect) {
-    uint8_t rval;
-    if(Rect.Width < 0 && Rect.Height < 0){
-        for(int32_t y = Rect.y; Rect.Height > y - Rect.y; --y) {
-            for(int32_t x = Rect.x; Rect.Width > x - Rect.x; --x) {
-                rval = CR_CRenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
-            }
-        }
-    }
-    else if(Rect.Width < 0) {
-        for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
-            for(int32_t x = Rect.x; Rect.Width > x - Rect.x; --x) {
-                rval = CR_CRenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
-            }
-        }
-    }
-    else if(Rect.Height < 0) {
-        for(int32_t y = Rect.y; Rect.Height > y - Rect.y; --y) {
-            for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
-                rval = CR_CRenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
-            }
-        }
-    }
-    else {
-        for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
-            for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
-                rval = CR_CRenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
-            }
+           rval = CR_RenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
         }
     }
     return rval;
@@ -443,7 +276,7 @@ uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text) {
     for(uint32_t y = Text.y; y - Text.y < Text.MaxHeight; ++y) {
         for(uint32_t x = Text.x; x - Text.x < Text.MaxWidth; ++x) {
             if(CharCounter == strlen(Text.Text)) return ReturnValue;
-            ReturnValue = CR_RenderSetChar(Render, x, y, Text.Text[CharCounter]);
+            ReturnValue = CR_RenderSetPixel(Render, x, y, Text.Text[CharCounter], (CR_Color){0});
             CharCounter++;
         }
     }
