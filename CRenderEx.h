@@ -142,7 +142,7 @@ void CR_RenderPrint(CR_Render Render, uint8_t backGround) {
                 printf("\x1b[%d;2;%d;%d;%dm", backGround, Render.Pixel[y][x].Red,
                 Render.Pixel[y][x].Green, Render.Pixel[y][x].Blue);
             }
-            printf("%c", Render.Chars[y][x]);
+            putchar(Render.Chars[y][x]);
             printf("\x1b[0m");
         }
         putchar('\n');
