@@ -1,7 +1,7 @@
 /*
-    CRenderEx - 1.0v - alpha
+    CRenderEx - 1.0v - preBeta
     Creator: Grathrram
-    start of dev: 17.01.2024
+    start of dev: 25.01.2024
     License GNU GPL 3
 */
 
@@ -30,11 +30,6 @@
 #define CR_ColorMode_Text       38
 #define CR_ColorMode_Background 48
 
-typedef struct CR_Vector2i {
-    int32_t x;
-    int32_t y;
-} CR_Vector2i;
-
 typedef struct CR_Color {
     uint8_t Red;
     uint8_t Green;
@@ -52,8 +47,8 @@ typedef struct CR_Render {
 typedef struct CR_Rect {
     uint32_t x;
     uint32_t y;
-    int32_t Width;
-    int32_t Height;
+    uint32_t Width;
+    uint32_t Height;
     char Char;
     CR_Color Color;
 } CR_Rect;
@@ -72,6 +67,7 @@ typedef struct CR_Text
 
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
 uint8_t CR_SetRender (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); ////use if render alrady allocated
+void CR_DestroyRender(CR_Render Render);
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
 void CR_RenderPrint(CR_Render Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
@@ -82,7 +78,10 @@ uint8_t CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t Positi
 uint8_t CR_SetText(CR_Text *Text, char* Text2Set);//changes Text
 
 uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
-uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text);//Overwrites render with Text
+uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color);//Overwrites render with Text
+
+//calculates Transparency
+CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background, uint8_t Alpha);
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
@@ -90,7 +89,7 @@ void CR_GetErrDesc(uint8_t Error); //prints description of error
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
-        Render->Chars[i] = (char*) malloc(sizeof(char) * (ResolutionX + 1));
+        Render->Chars[i] = (char*) malloc(sizeof(char) * ResolutionX);
     if(Render->Chars == NULL) return SIGOUTM;
 
     Render->Pixel  = (CR_Color**) malloc(sizeof(CR_Color*) * ResolutionY);
@@ -118,6 +117,11 @@ uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resolutio
     Render->ResolutionX = ResolutionX;
     Render->ResolutionY = ResolutionY;
     return SIGNONE;
+}
+
+void CR_DestroyRender(CR_Render Render) {
+    free(Render.Chars);
+    free(Render.Pixel);
 }
 
 //Fills Render With Colors
@@ -260,18 +264,31 @@ uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
 }
 
 //Overwrites render with Text
-uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text) {
+uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color) {
     uint32_t CharCounter = 0;
     uint8_t ReturnValue;
 
     for(uint32_t y = Text.y; y - Text.y < Text.MaxHeight; ++y) {
         for(uint32_t x = Text.x; x - Text.x < Text.MaxWidth; ++x) {
             if(CharCounter == strlen(Text.Text)) return ReturnValue;
-            ReturnValue = CR_RenderSetPixel(Render, x, y, Text.Text[CharCounter], (CR_Color){0});
+            ReturnValue = CR_RenderSetPixel(Render, x, y, Text.Text[CharCounter], Color);
             CharCounter++;
         }
     }
     return ReturnValue;
+}
+
+//calculates Transparency
+CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background, uint8_t Alpha) {
+    CR_Color buff;
+    float alpha = Alpha / 255.0;
+    float invAlpha = 1.0 - alpha;
+
+    buff.Red   = (uint8_t) (Curent.Red * alpha + Background.Red * invAlpha);
+    buff.Green = (uint8_t) (Curent.Green * alpha + Background.Green * invAlpha);
+    buff.Blue  = (uint8_t) (Curent.Blue* alpha + Background.Blue * invAlpha);
+    buff.draw  = Curent.draw;
+    return buff;
 }
 
 //prints description of error
