@@ -18,11 +18,6 @@
 #define SIGOUTB 2 //out of borders
 #define SIGINPE 3 //Input Error
 
-//\e[diffrent text; Text color; background]
-//#define first_C "\e[0;30;40"
-//#define End_c   "\e[8;37;47]"
-//"\x1b[${bg};2;${red};${green};${blue}m\n"
-
 #ifdef WIN32
 #include <windows.h>
 #define CR_ConsoleClear system("cls")
@@ -32,8 +27,8 @@
 #endif
 
 //no BackGround
-#define CR_Color_NoBackG 38
-#define CR_Color_BackG   48
+#define CR_ColorMode_Text       38
+#define CR_ColorMode_Background 48
 
 typedef struct CR_Vector2i {
     int32_t x;
@@ -74,6 +69,7 @@ typedef struct CR_Text
 
 //If No Errors Returns 0 Else errsig (All Functions!!! if not void)
 //If you see any error please fix or report. Thanks!!!
+
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
 uint8_t CR_SetRender (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); ////use if render alrady allocated
 
@@ -90,7 +86,7 @@ uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text);//Overwrites render with
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
-
+//initiates Render
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) malloc(sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
@@ -107,7 +103,7 @@ uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resoluti
     return SIGNONE;
 }
 
-//use if render alrady allocated
+//use if render already allocated
 uint8_t CR_SetRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
     Render->Chars = (char**) realloc(Render->Chars, sizeof(char*) * ResolutionY);
     for(uint32_t i=0; i < ResolutionY; ++i)
@@ -137,7 +133,7 @@ void CR_RenderFill(CR_Render *Render, char Character, CR_Color Color) {
 //Prints Graphics/Display You know what i mean
 void CR_RenderPrint(CR_Render Render, uint8_t backGround) {
     for(uint32_t y=0; y < Render.ResolutionY; ++y) {
-        for(uint32_t x=0; x < Render.ResolutionX; ++x) {//"\x1b[${bg};2;${red};${green};${blue}m\n"
+        for(uint32_t x=0; x < Render.ResolutionX; ++x) {
             if(Render.Pixel[y][x].draw) {
                 printf("\x1b[%d;2;%d;%d;%dm", backGround, Render.Pixel[y][x].Red,
                 Render.Pixel[y][x].Green, Render.Pixel[y][x].Blue);
@@ -159,7 +155,7 @@ uint8_t CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t Positi
     return SIGNONE;
 }
 
-
+//draws a line
 uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, 
 uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
     int dx,dy,Po;

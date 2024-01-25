@@ -21,37 +21,33 @@
 
 int main(void) {
     srand(time(NULL));
-    CR_CRender Render;
-    CR_InitCRender(&Render, ResolutionX , ResolutionY);
-    Render.Filler = ' ';
-    CR_CRenderFill(&Render, (CR_Color){0,0,0});
+    CR_Render Render;
+    CR_InitRender(&Render, ResolutionX , ResolutionY);
+    CR_RenderFill(&Render, ' ', (CR_Color){0,0,0,1});
 
     CR_Rect Rect = {0};
-    Rect.Color = (CR_Color){0,0,255};
+    Rect.Char = ' ';
+    Rect.Color = (CR_Color){0,0,255,1};
     Rect.Height = ResolutionY;
     Rect.Width  = 0;
 
     CR_Rect Rect2 = {0};
-    Rect2.Color = (CR_Color){0,0,0};
+    Rect.Char = ' ';
+    Rect2.Color = (CR_Color){0,0,0,1};
     Rect2.Height = ResolutionY;
     Rect2.Width = 0;
 
     while(1) {
         for(uint32_t i = ResolutionX; i != 0; --i) {
-            CR_Rect2CRender(&Render, Rect);
-            CR_Rect2CRender(&Render, Rect2);
+            CR_Rect2Render(&Render, Rect);
+            CR_Rect2Render(&Render, Rect2);
             Rect2.Width = i - 1; 
             Rect.Width = i;
-            Rect.Color = (CR_Color){rand() % 255,rand() % 255,rand() % 255};
+            Rect.Color = (CR_Color){rand() % 255,rand() % 255,rand() % 255, 1};
             CR_ConsoleClear;
-            CR_CRenderPrint(Render, CR_Color_BackG);
+            CR_RenderPrint(Render, CR_ColorMode_Background);
             sleep;
         }
     }
-    
-
-    CR_CRenderPrint(Render, CR_Color_BackG);
-
-
     return 0;
 }
