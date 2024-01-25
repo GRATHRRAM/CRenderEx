@@ -27,13 +27,13 @@ int main(void) {
 
     CR_Rect Rect = {0};
     Rect.Char = ' ';
-    Rect.Color = (CR_Color){0,0,255,1};
+    Rect.Color = (CR_Color){0,0,255,0};
     Rect.Height = ResolutionY;
     Rect.Width  = 0;
 
     CR_Rect Rect2 = {0};
     Rect.Char = ' ';
-    Rect2.Color = (CR_Color){0,0,0,1};
+    Rect2.Color = (CR_Color){0,0,0,0};
     Rect2.Height = ResolutionY;
     Rect2.Width = 0;
 
@@ -49,5 +49,6 @@ int main(void) {
             sleep;
         }
     }
+    CR_DestroyRender(Render);
     return 0;
 }

@@ -34,6 +34,7 @@ typedef struct CR_Color {
     uint8_t Red;
     uint8_t Green;
     uint8_t Blue;
+    uint8_t Alpha;
     uint8_t draw;
 } CR_Color;
 
@@ -81,7 +82,7 @@ uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with
 uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color);//Overwrites render with Text
 
 //calculates Transparency
-CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background, uint8_t Alpha);
+CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
@@ -154,7 +155,7 @@ uint8_t CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t Positi
     if(Render->ResolutionX <= PositionX ||
        Render->ResolutionY <= PositionY)
         return SIGOUTB;
-    Render->Pixel[PositionY][PositionX] = Color;
+    Render->Pixel[PositionY][PositionX] = CR_ApplayAlpha(Color, Render->Pixel[PositionY][PositionX]);
     Render->Chars[PositionY][PositionX] = Character;
     return SIGNONE;
 }
@@ -279,15 +280,16 @@ uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color) {
 }
 
 //calculates Transparency
-CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background, uint8_t Alpha) {
+CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background) {
     CR_Color buff;
-    float alpha = Alpha / 255.0;
+    float alpha = Curent.Alpha / 255.0;
     float invAlpha = 1.0 - alpha;
 
     buff.Red   = (uint8_t) (Curent.Red * alpha + Background.Red * invAlpha);
     buff.Green = (uint8_t) (Curent.Green * alpha + Background.Green * invAlpha);
     buff.Blue  = (uint8_t) (Curent.Blue* alpha + Background.Blue * invAlpha);
     buff.draw  = Curent.draw;
+    buff.Alpha = 255;
     return buff;
 }
 
