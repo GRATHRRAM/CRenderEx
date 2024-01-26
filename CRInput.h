@@ -37,6 +37,11 @@ int CRI_GetInput(void){
 #else 
 #include <conio.h>
 
+#define CRI_UpArrow    0x26
+#define CRI_DownArrow  0x28
+#define CRI_LeftArrow  0x25
+#define CRI_RightArrow 0x27
+
 //Gets Input Without Enter
 int CRI_GetInput(void) {
     int Char = (int) getch();

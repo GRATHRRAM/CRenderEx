@@ -1,5 +1,5 @@
 /*
-    CRenderEx - 1.0v - preBeta
+    CRenderEx - 1.0v - preBeta2
     Creator: Grathrram
     start of dev: 25.01.2024
     License GNU GPL 3
@@ -15,7 +15,7 @@
 
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
-#define SIGOUTB 2 //out of borders
+//#define SIGOUTB 2 //out of borders not used
 #define SIGINPE 3 //Input Error
 
 #ifdef WIN32
@@ -73,13 +73,14 @@ void CR_DestroyRender(CR_Render Render);
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
 void CR_RenderPrint(CR_Render Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
 
-uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
-uint8_t CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
+void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
+void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
 
 uint8_t CR_SetText(CR_Text *Text, char* Text2Set);//changes Text
 
-uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
-uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color);//Overwrites render with Text
+void CR_Rect2Render_Fill(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
+void CR_Rect2Render_Outline(CR_Render *Render, CR_Rect Rect);
+void CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color);//Overwrites render with Text
 
 //calculates Transparency
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);
@@ -151,24 +152,22 @@ void CR_RenderPrint(CR_Render Render, uint8_t backGround) {
 }
 
 //Replace Color and char at given position
-uint8_t CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color) {
+void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color) {
     if(Render->ResolutionX <= PositionX ||
        Render->ResolutionY <= PositionY)
-        return SIGOUTB;
+        return;
     Render->Pixel[PositionY][PositionX] = CR_ApplayAlpha(Color, Render->Pixel[PositionY][PositionX]);
     Render->Chars[PositionY][PositionX] = Character;
-    return SIGNONE;
 }
 
 //draws a line
-uint8_t CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, 
+void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, 
 uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
     int dx,dy,Po;
     int k=0;
     CR_RenderSetPixel(Render, StartX, StartY, Character, Color);
 	int xk=StartX;
 	int yk=StartY;
-    uint8_t ReturnValue = 0;
 
     dx=(EndX-StartX);
     dy=(EndY-StartY);
@@ -178,11 +177,11 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
  	    Po=(2*dy)-dx;
 	    for(k=StartX;k<(int)EndX;k++) { 
 	        if(Po<0) {	
-                ReturnValue = CR_RenderSetPixel(Render, ++xk, yk, Character, Color);
+                CR_RenderSetPixel(Render, ++xk, yk, Character, Color);
 			    Po=Po+(2*dy);
 		    }
 	        else {
-                ReturnValue = CR_RenderSetPixel(Render, ++xk, ++yk, Character, Color);
+                CR_RenderSetPixel(Render, ++xk, ++yk, Character, Color);
 			    Po=Po+(2*dy)-(2*dx);
 		    }
 	  }
@@ -193,11 +192,11 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
 	    Po=(2*dx)-dy;
 	    for(k=StartY;k<(int)EndY;k++) { 
 	        if(Po<0) {	
-                ReturnValue = CR_RenderSetPixel(Render, xk, ++yk, Character, Color);
+                CR_RenderSetPixel(Render, xk, ++yk, Character, Color);
 			    Po=Po+(2*dx);
 		    }
 	        else {
-                ReturnValue =  CR_RenderSetPixel(Render, ++xk, ++yk, Character, Color);
+                CR_RenderSetPixel(Render, ++xk, ++yk, Character, Color);
 			    Po=Po+(2*dx)-(2*dy);
 		    }
 	    }			
@@ -208,11 +207,11 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
         Po=(2*dy)-dx;
         for(k=StartX;k<(int)EndX;k++) { 
             if(Po<0) {	
-                ReturnValue = CR_RenderSetPixel(Render, ++xk, yk, Character, Color);
+                CR_RenderSetPixel(Render, ++xk, yk, Character, Color);
                 Po=Po+(2*dy);
             }
             else {
-                ReturnValue = CR_RenderSetPixel(Render, ++xk, --yk, Character, Color);
+                CR_RenderSetPixel(Render, ++xk, --yk, Character, Color);
                 Po=Po+(2*dy)-(2*dx);
             }
         }
@@ -223,16 +222,15 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
         Po=(2*dy)-dx;
         for(k=StartY;k>(int)EndY;k--) { 
             if(Po<0) {	
-                ReturnValue = CR_RenderSetPixel(Render, xk, --yk, Character, Color);
+                CR_RenderSetPixel(Render, xk, --yk, Character, Color);
                 Po=Po+(2*dx);
             }
             else {
-                ReturnValue = CR_RenderSetPixel(Render, ++xk, --yk, Character, Color);
+                CR_RenderSetPixel(Render, ++xk, --yk, Character, Color);
                 Po=Po+(2*dx)-(2*dy);
             }
         }
 	}
-    return ReturnValue;
 }
 
 //changes Text
@@ -254,29 +252,37 @@ uint8_t CR_SetText(CR_Text *Text, char* Text2Set) {
 }
 
 //Overwrites render with rect
-uint8_t CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
-    uint8_t rval;
+void CR_Rect2Render_Fill(CR_Render *Render, CR_Rect Rect) {
     for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
         for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
-           rval = CR_RenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
+           CR_RenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
         }
     }
-    return rval;
+}
+
+//Dont works Really Well
+void CR_Rect2Render_Outline(CR_Render *Render, CR_Rect Rect) {
+    for(uint32_t x = Rect.x; x < Rect.Width; ++x) {
+        CR_RenderSetPixel(Render, x, Rect.y, Rect.Char, Rect.Color);
+        CR_RenderSetPixel(Render, x, Rect.y + Rect.Height, Rect.Char, Rect.Color);
+    }
+    for(uint32_t y = Rect.y; y < Rect.Height; ++y) {
+        CR_RenderSetPixel(Render, Rect.x, y, Rect.Char, Rect.Color);
+        CR_RenderSetPixel(Render, Rect.x + Rect.Width, y, Rect.Char, Rect.Color);
+    }
 }
 
 //Overwrites render with Text
-uint8_t CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color) {
+void CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color) {
     uint32_t CharCounter = 0;
-    uint8_t ReturnValue;
 
     for(uint32_t y = Text.y; y - Text.y < Text.MaxHeight; ++y) {
         for(uint32_t x = Text.x; x - Text.x < Text.MaxWidth; ++x) {
-            if(CharCounter == strlen(Text.Text)) return ReturnValue;
-            ReturnValue = CR_RenderSetPixel(Render, x, y, Text.Text[CharCounter], Color);
+            if(CharCounter == strlen(Text.Text)) return;
+            CR_RenderSetPixel(Render, x, y, Text.Text[CharCounter], Color);
             CharCounter++;
         }
     }
-    return ReturnValue;
 }
 
 //calculates Transparency
