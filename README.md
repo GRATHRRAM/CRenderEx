@@ -3,6 +3,11 @@
 Old C Render Was Messy so i made new repository for new updates
 Old rep: https://github.com/scriptguy1/CRender
 
+# Compilation
+### To compile lib type make or ./build.sh
+### make all - builds all and copy it to BUILD_DIR
+### make clean - is deleteing .o files
+
 
 # Recter.c (CRenderEx 1.0-alpha) GNU/LINUX Debian
 https://github.com/scriptguy1/CRenderEx/assets/101575465/1d420656-5f3d-4f12-aa92-89b6ce0e36b8
