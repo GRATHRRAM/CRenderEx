@@ -18,7 +18,6 @@ libCRInput.a: CRInput.o
 	ar ruv libCRInput.a CRInput.o
 
 CopyToBuild: libCRInput.a libCRenderEx.a
-	mkdir $(BUILD_DIR)
 	cp *.a $(BUILD_DIR)/
  
 clean: 

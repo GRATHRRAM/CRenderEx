@@ -67,8 +67,7 @@ typedef struct CR_Text
 //If you see any error please fix or report. Thanks!!!
 
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
-uint8_t CR_SetRender (CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); ////use if render alrady allocated
-void CR_DestroyRender(CR_Render Render);
+void CR_DestroyRender(CR_Render Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
 void CR_RenderPrint(CR_Render Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
@@ -79,7 +78,6 @@ void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY
 uint8_t CR_SetText(CR_Text *Text, char* Text2Set);//changes Text
 
 void CR_Rect2Render_Fill(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
-void CR_Rect2Render_Outline(CR_Render *Render, CR_Rect Rect);
 void CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color);//Overwrites render with Text
 
 //calculates Transparency
