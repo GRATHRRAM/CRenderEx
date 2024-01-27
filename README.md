@@ -14,7 +14,7 @@ cc main.c -o main -L. -lCRenderEx -lCRInput</br>
 (Compiler) main_file -L.(include libs in curent folder) -l(name of lib what you use) (include CRInput if you use it)</br>
 </br>
 </br>
-#Exemples
+# Exemples
 ## Recter.c (CRenderEx 1.0-alpha) GNU/LINUX Debian
 https://github.com/scriptguy1/CRenderEx/assets/101575465/1d420656-5f3d-4f12-aa92-89b6ce0e36b8
 
