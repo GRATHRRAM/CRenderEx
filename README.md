@@ -8,7 +8,7 @@ Old rep: https://github.com/scriptguy1/CRender</br>
 ## Lib
 To compile lib type make or ./build.sh</br>
 make - builds things that changed</br>
-make all - builds all
+make all - builds all</br>
 make clean - is deleteing .o files</br>
 ## Exec
 cc main.c -o main -L. -lCRenderEx -lCRInput</br>
