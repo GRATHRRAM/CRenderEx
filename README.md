@@ -1,7 +1,8 @@
 # CRenderEx -> C(Console)Render(Graphics)Ex(Expanded)
 CRenderEx Its a lib for Simplyfing Basic Grapics in Terminal
-Old C Render Was Messy so i made new repository for new updates.
-Old rep: https://github.com/scriptguy1/CRender
+Old C Render Was Messy so i made new repository for new updates.</br>
+Old rep: https://github.com/scriptguy1/CRender</br>
+
 
 # Compilation
 ## Lib
