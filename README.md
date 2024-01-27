@@ -7,6 +7,7 @@ Old rep: https://github.com/scriptguy1/CRender</br>
 # Compilation
 ## Lib
 To compile lib type make or ./build.sh</br>
+make - builds things that changed
 make all - builds all and copy it to BUILD_DIR</br>
 make clean - is deleteing .o files</br>
 ## Exec
