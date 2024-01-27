@@ -53,7 +53,7 @@ int main(void) {
         CR_RenderSetPixel(&Render, 5,5,' ', (CR_Color){0,0,255,255,1});
 
         Rect.Color = (CR_Color){255,0,0,a,1};
-        CR_Rect2Render(&Render, Rect);
+        CR_Rect2Render_Fill(&Render, Rect);
 
         sprintf(buff ,"Alpha: %d", a); CR_SetText(&text, buff); CR_Text2Render(&Render, text, (CR_Color){0,0,255,255,1});
 

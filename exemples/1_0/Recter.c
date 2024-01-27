@@ -39,8 +39,8 @@ int main(void) {
 
     while(1) {
         for(uint32_t i = ResolutionX; i != 0; --i) {
-            CR_Rect2Render(&Render, Rect);
-            CR_Rect2Render(&Render, Rect2);
+            CR_Rect2Render_Fill(&Render, Rect);
+            CR_Rect2Render_Fill(&Render, Rect2);
             Rect2.Width = i - 1; 
             Rect.Width = i;
             Rect.Color = (CR_Color){rand() % 255,rand() % 255,rand() % 255, 1};

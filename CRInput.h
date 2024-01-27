@@ -1,5 +1,5 @@
 /*
-    CRenderInput - 1.0v
+    CRenderInput - 1.1v
     Creator: Grathrram
     start of dev: 12.01.2024
     License GNU GPL 3
@@ -21,19 +21,7 @@
 #define CRI_RightArrow 67
 
 //Gets Input Without Enter
-int CRI_GetInput(void){
-    int Char;   
-    static struct termios oldt, newt;
-    tcgetattr( STDIN_FILENO, &oldt);
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON);          
-    tcsetattr( STDIN_FILENO, TCSANOW, &newt);
-    Char = getchar();           
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
-
-    if(Char == 0) return SIGINPE;
-    return Char;
-}
+int CRI_GetInput(void);
 #else 
 #include <conio.h>
 
@@ -43,10 +31,6 @@ int CRI_GetInput(void){
 #define CRI_RightArrow 0x27
 
 //Gets Input Without Enter
-int CRI_GetInput(void) {
-    int Char = (int) getch();
-    if(Char == 0) return SIGINPE;
-    return Char;
-}
+int CRI_GetInput(void);
 #endif //!WIN32
 #endif //!CRINPUT_H
