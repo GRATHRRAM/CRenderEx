@@ -1,6 +1,6 @@
 /*
-    CRender - 1.0 - prebeta
-    CRInput - 1.0
+    CRender - 1.0
+    CRInput - 1.1
     Creator - Grathrram
     Created - 18.01.2024
 */
@@ -30,12 +30,6 @@ int main(void) {
     char buff[16];
     uint8_t a=128;
 
-    CR_Text text = {0};//its better if you make all null before CR_SetText
-    text.x = 0;
-    text.y = ResolutionY - 1;
-    text.MaxHeight = 1;
-    text.MaxWidth = ResolutionX;
-
     CR_Rect Rect;
     Rect.x = 0;
     Rect.y = 0;
@@ -44,18 +38,15 @@ int main(void) {
     Rect.Char = ' ';
     Rect.Color = (CR_Color){255,0,0,a,1};//(CR_Color){Red,Green,Blue,Alpha,toDraw?}  Draw? 1=yes 0=no
 
-
-    
-
     while(1) {
         CR_RenderFill(&Render, ' ', (CR_Color){0,0,0,255,1});
         CR_RenderSetPixel(&Render, 10,10,' ', (CR_Color){0,255,0,255,1});
         CR_RenderSetPixel(&Render, 5,5,' ', (CR_Color){0,0,255,255,1});
-
         Rect.Color = (CR_Color){255,0,0,a,1};
-        CR_Rect2Render_Fill(&Render, Rect);
+        CR_Rect2Render(&Render, Rect);
 
-        sprintf(buff ,"Alpha: %d", a); CR_SetText(&text, buff); CR_Text2Render(&Render, text, (CR_Color){0,0,255,255,1});
+        sprintf(buff ,"Alpha: %d", a);
+        CR_RenderDrawText(&Render, 0, ResolutionY - 1, 16, 1, buff, (CR_Color){0,0,200,255,1});
 
         CR_ConsoleClear;
         CR_RenderPrint(Render, CR_ColorMode_Background);

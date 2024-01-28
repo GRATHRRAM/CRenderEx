@@ -38,8 +38,7 @@ typedef struct CR_Rect {
     CR_Color Color;
 } CR_Rect;
 
-typedef struct CR_Text
-{
+typedef struct CR_Text {
     uint32_t x;
     uint32_t y;
     char *Text;
@@ -52,13 +51,13 @@ void CR_DestroyRender(CR_Render Render);//Frees Render (After that you can Init 
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
 void CR_RenderPrint(CR_Render Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
-void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
+
 void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
+void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
+void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color);//Overwrites render with rect
+void CR_RenderDrawText(CR_Render *Render, uint32_t x, uint32_t y, uint32_t MaxWidth, uint32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
 
-uint8_t CR_SetText(CR_Text *Text, char* Text2Set);//changes Text
-
-void CR_Rect2Render_Fill(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
-void CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color);//Overwrites render with Text
+void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
@@ -195,42 +194,32 @@ uint32_t EndX, uint32_t EndY, char Character, CR_Color Color) {
 	}
 }
 
-//changes Text
-uint8_t CR_SetText(CR_Text *Text, char* Text2Set) {
-    if(Text->Text == NULL) {
-        Text->Text = (char*) malloc(sizeof(char) * (strlen(Text2Set) + 1));
-        if(Text->Text == NULL) return SIGOUTM;
-        else Text->Text = Text2Set;
+void CR_RenderDrawText(CR_Render *Render, uint32_t x, uint32_t y, uint32_t MaxWidth, uint32_t MaxHeight, const char* Text, CR_Color Color) {
+  uint32_t CharCounter = 0;
+
+    for(uint32_t ly = y; ly - y < MaxHeight; ++ly) {
+        for(uint32_t lx = x; lx - x < MaxWidth; ++lx) {
+            if(CharCounter == strlen(Text)) return;
+            CR_RenderSetPixel(Render, lx, ly, (char) Text[CharCounter], Color);
+            CharCounter++;
+        }
     }
-    else if(strlen(Text2Set) >= strlen(Text->Text)){
-        Text->Text = Text2Set;
-    }
-    else {
-        Text->Text = (char*) realloc(Text->Text, sizeof(char) * (strlen(Text2Set) + 1));
-        if(Text->Text == NULL) return SIGOUTM;
-        else Text->Text = Text2Set;
-    }
-    return SIGNONE;
-}
+} 
 
 //Overwrites render with rect
-void CR_Rect2Render_Fill(CR_Render *Render, CR_Rect Rect) {
-    for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
-        for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
-           CR_RenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
+void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color) {
+    for(uint32_t ly = y; ly - y < h; ++ly) {
+        for(uint32_t lx = x; lx - lx < w; ++lx) {
+           CR_RenderSetPixel(Render, x, y, Char, Color);
         }
     }
 }
 
-//Overwrites render with Text
-void CR_Text2Render(CR_Render *Render, CR_Text Text, CR_Color Color) {
-    uint32_t CharCounter = 0;
-
-    for(uint32_t y = Text.y; y - Text.y < Text.MaxHeight; ++y) {
-        for(uint32_t x = Text.x; x - Text.x < Text.MaxWidth; ++x) {
-            if(CharCounter == strlen(Text.Text)) return;
-            CR_RenderSetPixel(Render, x, y, Text.Text[CharCounter], Color);
-            CharCounter++;
+//Overwrites render with rect
+void CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
+    for(uint32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
+        for(uint32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
+           CR_RenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
         }
     }
 }
