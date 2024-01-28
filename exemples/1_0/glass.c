@@ -5,9 +5,6 @@
 */
 
 #include "CRenderEx.h"
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 #define ResolutionX 80
@@ -42,7 +39,7 @@ int main(void) {
 
     while(1) {
       if(ALR) Alpha = rand() % 255;
-      CR_RenderDrawRect(&Render,
+      CR_RenderDrawRectFill(&Render,
       GetPosX(),
       GetPosY(),
       GetPosX(),
