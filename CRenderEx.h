@@ -60,7 +60,7 @@ uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resoluti
 void CR_DestroyRender(CR_Render Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
-void CR_RenderPrint(CR_Render Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
+void CR_RenderPrint(CR_Render *Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
 
 void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
 void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
