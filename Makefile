@@ -11,7 +11,7 @@ CRenderEx.o: $(SRC_DIR)/CRenderEx.c
 CRInput.o: $(SRC_DIR)/CRInput.c
 	$(CC) $(FLAGS) $(SRC_DIR)/CRInput.c -o CRInput.o
 
-libCRenderEx.a: CRenderEx.o
+libCRenderEx.a: CRenderEx.o 
 	ar ruv libCRenderEx.a CRenderEx.o
 
 libCRInput.a: CRInput.o
