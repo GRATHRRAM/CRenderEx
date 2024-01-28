@@ -1,5 +1,5 @@
 CC=gcc
-FLAGS=-O3 -Wall -g -c
+FLAGS=-O3 -Wall -Wextra -g -c
 BUILD_DIR=Build
 SRC_DIR=src
 
