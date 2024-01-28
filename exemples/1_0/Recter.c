@@ -27,13 +27,13 @@ int main(void) {
 
     CR_Rect Rect = {0};
     Rect.Char = ' ';
-    Rect.Color = (CR_Color){0,0,255,255,1};
+    Rect.Color = CR_VOID;
     Rect.Height = ResolutionY;
     Rect.Width  = 0;
 
     CR_Rect Rect2 = {0};
     Rect.Char = ' ';
-    Rect2.Color = (CR_Color){0,0,0, 255,1};
+    Rect2.Color = CR_BLACK;
     Rect2.Height = ResolutionY;
     Rect2.Width = 0;
 
@@ -45,10 +45,10 @@ int main(void) {
             Rect.Width = i;
             Rect.Color = (CR_Color){rand() % 255,rand() % 255,rand() % 255, 255, 1};
             CR_ConsoleClear;
-            CR_RenderPrint(Render, CR_ColorMode_Background);
+            CR_RenderPrint(&Render, CR_ColorMode_Background);
             sleep;
         }
     }
-    CR_DestroyRender(Render);
+    CR_DestroyRender(&Render);
     return 0;
 }

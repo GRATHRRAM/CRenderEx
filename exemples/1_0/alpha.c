@@ -25,7 +25,7 @@ int main(void) {
     srand(time(NULL));
     CR_Render Render;
     if(CR_InitRender(&Render, ResolutionX , ResolutionY)) return 1;
-    CR_RenderFill(&Render, ' ', (CR_Color){0,0,0,255,1});
+    CR_RenderFill(&Render, ' ', CR_VOID);
 
     char buff[16];
     uint8_t a=128;
@@ -39,17 +39,17 @@ int main(void) {
     Rect.Color = (CR_Color){255,0,0,a,1};//(CR_Color){Red,Green,Blue,Alpha,toDraw?}  Draw? 1=yes 0=no
 
     while(1) {
-        CR_RenderFill(&Render, ' ', (CR_Color){0,0,0,255,1});
-        CR_RenderSetPixel(&Render, 10,10,' ', (CR_Color){0,255,0,255,1});
-        CR_RenderSetPixel(&Render, 5,5,' ', (CR_Color){0,0,255,255,1});
+        CR_RenderFill(&Render, ' ', CR_VOID);
+        CR_RenderSetPixel(&Render, 10,10,' ', CRC_GREEN);
+        CR_RenderSetPixel(&Render, 5,5,' ', CRC_RED);
         Rect.Color = (CR_Color){255,0,0,a,1};
         CR_Rect2Render(&Render, Rect);
 
         sprintf(buff ,"Alpha: %d", a);
-        CR_RenderDrawText(&Render, 0, ResolutionY - 1, 16, 1, buff, (CR_Color){0,0,200,255,1});
+        CR_RenderDrawText(&Render, 0, ResolutionY - 1, 16, 1, buff, CRC_BLUE);
 
         CR_ConsoleClear;
-        CR_RenderPrint(Render, CR_ColorMode_Background);
+        CR_RenderPrint(&Render, CR_ColorMode_Background);
 
         char inp = CRI_GetInput();
         if(inp == 'w') Rect.y--;
@@ -62,5 +62,6 @@ int main(void) {
         if(inp == CRI_DownArrow) a--;
     }
 
+    CR_DestroyRender(&Render);
     return 0;
 }
