@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
@@ -19,7 +20,7 @@ typedef struct CR_Color {
     uint8_t Green;
     uint8_t Blue;
     uint8_t Alpha;
-    uint8_t draw;
+    bool draw;
 } CR_Color;
 
 typedef struct CR_Render {
@@ -47,7 +48,7 @@ typedef struct CR_Text {
 } CR_Text;
 
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
-void CR_DestroyRender(CR_Render Render);//Frees Render (After that you can Init Another Render)
+void CR_DestroyRender(CR_Render *Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
 void CR_RenderPrint(CR_Render *Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
@@ -56,6 +57,8 @@ void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY
 void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
 void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color);//Overwrites render with rect
 void CR_RenderDrawText(CR_Render *Render, uint32_t x, uint32_t y, uint32_t MaxWidth, uint32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
+void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);
+void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);
 
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
@@ -82,9 +85,9 @@ uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resoluti
 }
 
 //Frees Render (After that you can Init Another Render)
-void CR_DestroyRender(CR_Render Render) {
-    free(Render.Chars);
-    free(Render.Pixel);
+void CR_DestroyRender(CR_Render *Render) {
+    free(Render->Chars);
+    free(Render->Pixel);
 }
 
 //Fills Render With Colors
@@ -211,6 +214,50 @@ void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, ui
     for(uint32_t ly = y; ly - y < h; ++ly) {
         for(uint32_t lx = x; lx - x < w; ++lx) {
            CR_RenderSetPixel(Render, lx, ly, Char, Color);
+        }
+    }
+}
+
+void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color) {
+    int lx = 0, ly = Radius;
+    int d = 3 - 2 * Radius;
+
+    while (ly >= lx) {
+        CR_RenderSetPixel(Render, x + lx, y + ly, Char, Color);
+        CR_RenderSetPixel(Render, x - lx, y + ly, Char, Color);
+        CR_RenderSetPixel(Render, x + lx, y - ly, Char, Color);
+        CR_RenderSetPixel(Render, x - lx, y - ly, Char, Color);
+        CR_RenderSetPixel(Render, x + ly, y + lx, Char, Color);
+        CR_RenderSetPixel(Render, x - ly, y + lx, Char, Color);
+        CR_RenderSetPixel(Render, x + ly, y - lx, Char, Color);
+        CR_RenderSetPixel(Render, x - ly, y - lx, Char, Color);
+        lx++;
+
+        if (d > 0) {
+            ly--;
+            d = d + 4 * (lx - ly) + 10;
+        } else {
+            d = d + 4 * lx + 6;
+        }
+        CR_RenderSetPixel(Render, x + lx, y + ly, Char, Color);
+        CR_RenderSetPixel(Render, x - lx, y + ly, Char, Color);
+        CR_RenderSetPixel(Render, x + lx, y - ly, Char, Color);
+        CR_RenderSetPixel(Render, x - lx, y - ly, Char, Color);
+        CR_RenderSetPixel(Render, x + ly, y + lx, Char, Color);
+        CR_RenderSetPixel(Render, x - ly, y + lx, Char, Color);
+        CR_RenderSetPixel(Render, x + ly, y - lx, Char, Color);
+        CR_RenderSetPixel(Render, x - ly, y - lx, Char, Color);
+    }
+}
+
+void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color) {
+    CR_RenderDrawCircle(Render, x, y, Radius, Char, Color);
+
+    for (int32_t ly = y - Radius; ly <= y + Radius; ly++) {
+        for (int32_t lx = x - Radius; lx <= x + Radius; lx++) {
+            if ((lx - x) * (lx - x) + (ly - y) * (ly - y) <= Radius * Radius) {
+                CR_RenderSetPixel(Render, lx, ly, Char, Color);
+            }
         }
     }
 }

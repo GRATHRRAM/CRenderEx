@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
@@ -30,12 +31,44 @@
 #define CR_ColorMode_Text       38
 #define CR_ColorMode_Background 48
 
+//#define CR_ColorName (CR_Color){Red,Green,Blue,Alpha,Draw?}
+#define CR_FRED   (CR_Color){255,0,0,255,true} //Full Red
+#define CR_FGREEN (CR_Color){0,255,0,255,true} //Full Green
+#define CR_FBLUE  (CR_Color){0,0,255,255,true} //Full Blue
+
+#define CR_WHITE (CR_Color){255,255,255,true} //White
+#define CR_BLACK (CR_Color){0,0,0,255,true}   //Black
+#define CR_VOID  (CR_Color){0,0,0,0,false}    //Its fully Transparent and its not drawn
+
+#define CR_LIGHTGRAY  (CR_Color){ 200, 200, 200, 255, true}   // Light Gray
+#define CR_GRAY       (CR_Color){ 130, 130, 130, 255, true}   // Gray
+#define CR_DARKGRAY   (CR_Color){ 80, 80, 80, 255, true}      // Dark Gray
+#define CR_YELLOW     (CR_Color){ 253, 249, 0, 255, true}     // Yellow
+#define CR_GOLD       (CR_Color){ 255, 203, 0, 255, true}     // Gold
+#define CR_ORANGE     (CR_Color){ 255, 161, 0, 255, true}     // Orange
+#define CR_PINK       (CR_Color){ 255, 109, 194, 255, true}   // Pink
+#define CR_RED        (CR_Color){ 230, 41, 55, 255, true}     // Red
+#define CR_MAROON     (CR_Color){ 190, 33, 55, 255, true}     // Maroon
+#define CR_GREEN      (CR_Color){ 0, 228, 48, 255, true}      // Green
+#define CR_LIME       (CR_Color){ 0, 158, 47, 255, true}      // Lime
+#define CR_DARKGREEN  (CR_Color){ 0, 117, 44, 255, true}      // Dark Green
+#define CR_SKYBLUE    (CR_Color){ 102, 191, 255, 255, true}   // Sky Blue
+#define CR_BLUE       (CR_Color){ 0, 121, 241, 255, true}     // Blue
+#define CR_DARKBLUE   (CR_Color){ 0, 82, 172, 255, true}      // Dark Blue
+#define CR_PURPLE     (CR_Color){ 200, 122, 255, 255, true}   // Purple
+#define CR_VIOLET     (CR_Color){ 135, 60, 190, 255, true}    // Violet
+#define CR_DARKPURPLE (CR_Color){ 112, 31, 126, 255, true}    // Dark Purple
+#define CR_BEIGE      (CR_Color){ 211, 176, 131, 255, true}   // Beige
+#define CR_BROWN      (CR_Color){ 127, 106, 79, 255, true}    // Brown
+#define CR_DARKBROWN  (CR_Color){ 76, 63, 47, 255, true}      // Dark Brown
+#define CR_MAGENTA    (CR_Color){ 255, 0, 255, 255, true}     // Magenta
+
 typedef struct CR_Color {
     uint8_t Red;
     uint8_t Green;
     uint8_t Blue;
     uint8_t Alpha;
-    uint8_t draw;
+    bool draw;
 } CR_Color;
 
 typedef struct CR_Render {
@@ -57,7 +90,7 @@ typedef struct CR_Rect {
 //If you see any error please fix or report. Thanks!!!
 
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
-void CR_DestroyRender(CR_Render Render);//Frees Render (After that you can Init Another Render)
+void CR_DestroyRender(CR_Render *Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
 void CR_RenderPrint(CR_Render *Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
@@ -66,6 +99,8 @@ void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY
 void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
 void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color);//Overwrites render with rect
 void CR_RenderDrawText(CR_Render *Render, uint32_t x, uint32_t y, uint32_t MaxWidth, uint32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
+void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);
+void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);
 
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
