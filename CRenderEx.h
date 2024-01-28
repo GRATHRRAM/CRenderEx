@@ -40,28 +40,28 @@
 #define CR_BLACK (CR_Color){0,0,0,255,true}   //Black
 #define CR_VOID  (CR_Color){0,0,0,0,false}    //Its fully Transparent and its not drawn
 
-#define CR_LIGHTGRAY  (CR_Color){ 200, 200, 200, 255, true}   // Light Gray
-#define CR_GRAY       (CR_Color){ 130, 130, 130, 255, true}   // Gray
-#define CR_DARKGRAY   (CR_Color){ 80, 80, 80, 255, true}      // Dark Gray
-#define CR_YELLOW     (CR_Color){ 253, 249, 0, 255, true}     // Yellow
-#define CR_GOLD       (CR_Color){ 255, 203, 0, 255, true}     // Gold
-#define CR_ORANGE     (CR_Color){ 255, 161, 0, 255, true}     // Orange
-#define CR_PINK       (CR_Color){ 255, 109, 194, 255, true}   // Pink
-#define CR_RED        (CR_Color){ 230, 41, 55, 255, true}     // Red
-#define CR_MAROON     (CR_Color){ 190, 33, 55, 255, true}     // Maroon
-#define CR_GREEN      (CR_Color){ 0, 228, 48, 255, true}      // Green
-#define CR_LIME       (CR_Color){ 0, 158, 47, 255, true}      // Lime
-#define CR_DARKGREEN  (CR_Color){ 0, 117, 44, 255, true}      // Dark Green
-#define CR_SKYBLUE    (CR_Color){ 102, 191, 255, 255, true}   // Sky Blue
-#define CR_BLUE       (CR_Color){ 0, 121, 241, 255, true}     // Blue
-#define CR_DARKBLUE   (CR_Color){ 0, 82, 172, 255, true}      // Dark Blue
-#define CR_PURPLE     (CR_Color){ 200, 122, 255, 255, true}   // Purple
-#define CR_VIOLET     (CR_Color){ 135, 60, 190, 255, true}    // Violet
-#define CR_DARKPURPLE (CR_Color){ 112, 31, 126, 255, true}    // Dark Purple
-#define CR_BEIGE      (CR_Color){ 211, 176, 131, 255, true}   // Beige
-#define CR_BROWN      (CR_Color){ 127, 106, 79, 255, true}    // Brown
-#define CR_DARKBROWN  (CR_Color){ 76, 63, 47, 255, true}      // Dark Brown
-#define CR_MAGENTA    (CR_Color){ 255, 0, 255, 255, true}     // Magenta
+#define CRC_LIGHTGRAY  (CR_Color){ 200, 200, 200, 255, true}   // Light Gray
+#define CRC_GRAY       (CR_Color){ 130, 130, 130, 255, true}   // Gray
+#define CRC_DARKGRAY   (CR_Color){ 80, 80, 80, 255, true}      // Dark Gray
+#define CRC_YELLOW     (CR_Color){ 253, 249, 0, 255, true}     // Yellow
+#define CRC_GOLD       (CR_Color){ 255, 203, 0, 255, true}     // Gold
+#define CRC_ORANGE     (CR_Color){ 255, 161, 0, 255, true}     // Orange
+#define CRC_PINK       (CR_Color){ 255, 109, 194, 255, true}   // Pink
+#define CRC_RED        (CR_Color){ 230, 41, 55, 255, true}     // Red
+#define CRC_MAROON     (CR_Color){ 190, 33, 55, 255, true}     // Maroon
+#define CRC_GREEN      (CR_Color){ 0, 228, 48, 255, true}      // Green
+#define CRC_LIME       (CR_Color){ 0, 158, 47, 255, true}      // Lime
+#define CRC_DARKGREEN  (CR_Color){ 0, 117, 44, 255, true}      // Dark Green
+#define CRC_SKYBLUE    (CR_Color){ 102, 191, 255, 255, true}   // Sky Blue
+#define CRC_BLUE       (CR_Color){ 0, 121, 241, 255, true}     // Blue
+#define CRC_DARKBLUE   (CR_Color){ 0, 82, 172, 255, true}      // Dark Blue
+#define CRC_PURPLE     (CR_Color){ 200, 122, 255, 255, true}   // Purple
+#define CRC_VIOLET     (CR_Color){ 135, 60, 190, 255, true}    // Violet
+#define CRC_DARKPURPLE (CR_Color){ 112, 31, 126, 255, true}    // Dark Purple
+#define CRC_BEIGE      (CR_Color){ 211, 176, 131, 255, true}   // Beige
+#define CRC_BROWN      (CR_Color){ 127, 106, 79, 255, true}    // Brown
+#define CRC_DARKBROWN  (CR_Color){ 76, 63, 47, 255, true}      // Dark Brown
+#define CRC_MAGENTA    (CR_Color){ 255, 0, 255, 255, true}     // Magenta
 
 typedef struct CR_Color {
     uint8_t Red;
@@ -97,15 +97,16 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround); //Prints Graphics/Di
 
 void CR_RenderSetPixel(CR_Render *Render, uint32_t PositionX, uint32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
 void CR_RenderDrawLine(CR_Render *Render, uint32_t StartX, uint32_t StartY, uint32_t EndX, uint32_t EndY, char Character, CR_Color Color);//Draws a line
-void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color);//Overwrites render with rect
+void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t h, uint32_t w, char Char, CR_Color Color);//Draws Only outlines of Rect
+void CR_RenderDrawRectNP(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color);//Draws Rect With Normal Proporcion
+void CR_RenderDrawRectFill(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color);//Overwrites render with rect
 void CR_RenderDrawText(CR_Render *Render, uint32_t x, uint32_t y, uint32_t MaxWidth, uint32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
-void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);
-void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);
+void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);//Draws only outlines of circle
+void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);//Draws Circle And fills it
 
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
-//calculates Transparency
-CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);
+CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
