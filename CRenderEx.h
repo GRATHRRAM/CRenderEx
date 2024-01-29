@@ -118,6 +118,7 @@ void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with re
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
 bool CR_ColisionRect(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2);
+bool CR_ColisionElipse(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2);
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 

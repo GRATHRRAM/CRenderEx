@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <math.h>
 
 #define SIGNONE 0 //no error
 #define SIGOUTM 1 //out of memory
@@ -60,6 +61,7 @@ void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, cha
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
 bool CR_ColisionRect(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2);//if Rect colide Returns true else false 1/0
+bool CR_ColisionElipse(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2);
 
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
@@ -384,6 +386,13 @@ bool CR_ColisionRect(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32
     } else {
         return true;
     }
+}
+
+bool CR_ColisionElipse(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2) {
+    float distance = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+    float sumRadii = w1 + h1 + w2 + h2;
+    if (distance <= sumRadii) return true;
+    else return false;
 }
 
 //prints description of error
