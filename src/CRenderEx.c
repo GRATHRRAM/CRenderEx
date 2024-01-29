@@ -61,6 +61,8 @@ void CR_RenderDrawRectFill(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w
 void CR_RenderDrawText(CR_Render *Render, uint32_t x, uint32_t y, uint32_t MaxWidth, uint32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
 void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);//Draws only outlines of circle
 void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);//Draws Circle And fills it
+void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
+void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
 
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
@@ -219,7 +221,7 @@ void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, ui
     CR_RenderSetPixel(Render, lx, y, Char, Color);
     CR_RenderSetPixel(Render, lx, y + h, Char, Color);
   }
-  for(uint32_t ly = y; ly < y + h; ++ly) {
+  for(uint32_t ly = y + 1; ly < y + h; ++ly) {
     CR_RenderSetPixel(Render, x, ly, Char, Color);
     CR_RenderSetPixel(Render, x + w, ly, Char, Color);
   }
@@ -229,12 +231,14 @@ void CR_RenderDrawRect(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, ui
 void CR_RenderDrawRectNP(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w, uint32_t h, char Char, CR_Color Color) {
   CR_RenderSetPixel(Render, x, y, Char, Color);
   CR_RenderSetPixel(Render, x, y + h, Char, Color);
+  CR_RenderSetPixel(Render, x-1, y, Char, Color);
+  CR_RenderSetPixel(Render, x + w + 1, y, Char, Color);
   
   for(uint32_t lx = x + 1; lx < x + w + 1; ++lx) {
     CR_RenderSetPixel(Render, lx, y, Char, Color);
     CR_RenderSetPixel(Render, lx, y + h, Char, Color);
   }
-  for(uint32_t ly = y; ly < y + h; ++ly) {
+  for(uint32_t ly = y + 1; ly < y + h; ++ly) {
     CR_RenderSetPixel(Render, x, ly, Char, Color);
     CR_RenderSetPixel(Render, x + w, ly, Char, Color);
     CR_RenderSetPixel(Render, x-1, ly, Char, Color);
@@ -293,6 +297,61 @@ void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char C
         for (int32_t lx = x - Radius; lx <= x + Radius; lx++) {
             if ((lx - x) * (lx - x) + (ly - y) * (ly - y) <= Radius * Radius) {
                 CR_RenderSetPixel(Render, lx, ly, Char, Color);
+            }
+        }
+    }
+}
+
+void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color) {
+    int lx = 0, ly = h;
+    long a_sqr = w * w;
+    long b_sqr = h * h;
+    long d1 = b_sqr - a_sqr * h + 0.25 * a_sqr;
+    long dx = 2 * b_sqr * lx;
+    long dy = 2 * a_sqr * ly;
+
+    while (dx < dy) {
+        CR_RenderSetPixel(Render, x + lx, y + ly, Char,Color);
+        CR_RenderSetPixel(Render, x - lx, y + ly, Char,Color);
+        CR_RenderSetPixel(Render, x + lx, y - ly, Char,Color);
+        CR_RenderSetPixel(Render, x - lx, y - ly, Char,Color);
+
+        lx++;
+        dx += 2 * b_sqr;
+        if (d1 < 0) {
+            d1 += dx + b_sqr;
+        } else {
+            ly--;
+            dy -= 2 * a_sqr;
+            d1 += dx - dy + b_sqr;
+        }
+    }
+
+    long d2 = b_sqr * (lx + 0.5) * (lx + 0.5) + a_sqr * (ly - 1) * (ly - 1) - a_sqr * b_sqr;
+    while (ly >= 0) {
+        CR_RenderSetPixel(Render, x + lx, y + ly, Char,Color);
+        CR_RenderSetPixel(Render, x - lx, y + ly, Char,Color);
+        CR_RenderSetPixel(Render, x + lx, y - ly, Char,Color);
+        CR_RenderSetPixel(Render, x - lx, y - ly, Char,Color);
+
+        ly--;
+        dy -= 2 * a_sqr;
+        if (d2 > 0) {
+            d2 += a_sqr - dy;
+        } else {
+            lx++;
+            dx += 2 * b_sqr;
+            d2 += a_sqr + dx - dy;
+        }
+    }
+}
+
+void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color) {
+  CR_RenderDrawEllipse(Render, x, y, w, h, Char, Color);
+    for (int ly = y - h; ly <= y + h; ly++) {
+        for (int lx = x - w; lx <= x + w; lx++) {
+            if ((lx - x)*(lx - x) / (float)(w * w) + (ly - y)*(ly - y) / (float)(h * h) <= 1) {
+                CR_RenderSetPixel(Render, lx, ly, Char,Color);
             }
         }
     }

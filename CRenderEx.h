@@ -36,7 +36,7 @@
 #define CR_FGREEN (CR_Color){0,255,0,255,true} //Full Green
 #define CR_FBLUE  (CR_Color){0,0,255,255,true} //Full Blue
 
-#define CR_WHITE (CR_Color){255,255,255,true} //White
+#define CR_WHITE (CR_Color){255,255,255,255,true} //White
 #define CR_BLACK (CR_Color){0,0,0,255,true}   //Black
 #define CR_VOID  (CR_Color){0,0,0,0,false}    //Its fully Transparent and its not drawn
 
@@ -103,6 +103,9 @@ void CR_RenderDrawRectFill(CR_Render *Render, uint32_t x, uint32_t y, uint32_t w
 void CR_RenderDrawText(CR_Render *Render, uint32_t x, uint32_t y, uint32_t MaxWidth, uint32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
 void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);//Draws only outlines of circle
 void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);//Draws Circle And fills it
+void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
+void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
+
 
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
