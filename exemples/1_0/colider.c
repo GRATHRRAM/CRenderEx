@@ -39,6 +39,11 @@ int main(void) {
         if(inp == 'a') x1--;
         if(inp == 'd') x1++;
         if(inp == 'q') break;
+
+        if(inp == CRI_UpArrow)    h1--;
+        if(inp == CRI_DownArrow)  h1++;
+        if(inp == CRI_LeftArrow)  w1--;
+        if(inp == CRI_RightArrow) w1++;
     }
 
     CR_DestroyRender(&Render);
