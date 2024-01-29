@@ -39,16 +39,9 @@ typedef struct CR_Rect {
     CR_Color Color;
 } CR_Rect;
 
-typedef struct CR_Text {
-    uint32_t x;
-    uint32_t y;
-    char *Text;
-    uint32_t MaxWidth;
-    uint32_t MaxHeight;
-} CR_Text;
-
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
 void CR_DestroyRender(CR_Render *Render);//Frees Render (After that you can Init Another Render)
+
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
 void CR_RenderPrint(CR_Render *Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
@@ -65,6 +58,8 @@ void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Ch
 void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
 
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
+
+bool CR_ColisionRect(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2);//if Rect colide Returns true else false 1/0
 
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
@@ -378,6 +373,17 @@ CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background) {
     buff.draw  = Curent.draw;
     buff.Alpha = 255;
     return buff;
+}
+
+bool CR_ColisionRect(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2) {
+ if (x1 + w1 < x2 ||
+        x2 + w2 < x1 ||
+        y1 + h1 < y2 ||
+        y2 + h2 < y1) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 //prints description of error

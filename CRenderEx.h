@@ -86,6 +86,13 @@ typedef struct CR_Rect {
     char Char;
     CR_Color Color;
 } CR_Rect;
+
+typedef struct CR_Texture {
+    char **Chars;
+    CR_Color **Pixel;
+    uint32_t Height;
+    uint32_t Width;
+} CR_Texture;
 //If No Errors Returns 0 Else errsig (All Functions!!! if not void)
 //If you see any error please fix or report. Thanks!!!
 
@@ -106,10 +113,11 @@ void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char C
 void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
 void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
 
-
 void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
 
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
+
+bool CR_ColisionRect(uint32_t x1 , uint32_t y1, uint32_t w1, uint32_t h1, uint32_t x2 , uint32_t y2, uint32_t w2, uint32_t h2);
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
