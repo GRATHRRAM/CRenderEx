@@ -84,6 +84,11 @@ typedef struct Vector2 {
   float y;
 } Vector2;
 
+typedef struct Vector2i {
+    int x;
+    int y;
+} Vector2i;
+
 typedef struct CR_Rect {
     int32_t x;
     int32_t y;
@@ -100,8 +105,8 @@ uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resoluti
 void CR_DestroyRender(CR_Render *Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
-void CR_RenderPrint(CR_Render *Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
-void CR_RenderPrintProp(CR_Render *Render, uint8_t backGround);
+void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint); //Prints Graphics/Display You know what i mean
+void CR_RenderStretch(CR_Render *Render);
 
 void CR_RenderSetPixel(CR_Render *Render, int32_t PositionX, int32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
 void CR_RenderDrawLine(CR_Render *Render, char Character,CR_Color Color, int32_t StartX, int32_t StartY, int32_t EndX, int32_t EndY);//Draws a line

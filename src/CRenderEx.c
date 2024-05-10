@@ -37,6 +37,11 @@ typedef struct Vector2 {
   float y;
 } Vector2;
 
+typedef struct Vector2i {
+    int x;
+    int y;
+} Vector2i;
+
 typedef struct CR_Rect {
     int32_t x;
     int32_t y;
@@ -53,8 +58,8 @@ uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resoluti
 void CR_DestroyRender(CR_Render *Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
-void CR_RenderPrint(CR_Render *Render, uint8_t backGround); //Prints Graphics/Display You know what i mean
-void CR_RenderPrintProp(CR_Render *Render, uint8_t backGround);
+void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint); //Prints Graphics/Display You know what i mean
+void CR_RenderStretch(CR_Render *Render);//from 1:1 to 2:1 (normal proporcions for color rendering use text after stretch)
 
 void CR_RenderSetPixel(CR_Render *Render, int32_t PositionX, int32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
 void CR_RenderDrawLine(CR_Render *Render, char Character,CR_Color Color, int32_t StartX, int32_t StartY, int32_t EndX, int32_t EndY);//Draws a line
@@ -114,9 +119,9 @@ void CR_RenderFill(CR_Render *Render, char Character, CR_Color Color) {
 }
 
 //Prints Graphics/Display You know what i mean
-void CR_RenderPrint(CR_Render *Render, uint8_t backGround) {
-    for(uint32_t y=0; y < Render->ResolutionY; ++y) {
-        for(uint32_t x=0; x < Render->ResolutionX; ++x) {
+void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint) {
+    for(uint32_t y=0; y < Render->ResolutionY || y < (uint32_t) SizeofPrint.y; ++y) {
+        for(uint32_t x=0; x < Render->ResolutionX || x < (uint32_t) SizeofPrint.x; ++x) {
             printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].Red,
             Render->Pixel[y][x].Green, Render->Pixel[y][x].Blue);
             putchar(Render->Chars[y][x]);
@@ -126,17 +131,39 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround) {
     }
 }
 
-void CR_RenderPrintProp(CR_Render *Render, uint8_t backGround) {
+void CR_RenderStretch(CR_Render *Render) {
+    CR_Render *Render2;
+    CR_InitRender(Render2, Render->ResolutionX*2, Render->ResolutionY*2);
+
+    uint32_t dx=0,dy=0;
+    
+    for(uint32_t y=0;y < Render->ResolutionY-2; ++y) {
+        dx=0;
+        for(uint32_t x=0;x < Render->ResolutionX-2; ++x) {
+            Render2->Chars[dy][dx] = Render->Chars[y][x];
+            Render2->Chars[dy][dx+1] = Render->Chars[y][x];
+            dx+=2;
+        }
+        dy+=2;
+    }
+
+    CR_DestroyRender(Render);
+    CR_InitRender(Render, Render2->ResolutionX,Render2->ResolutionY);
+
+    for(uint32_t y=0; y < Render->ResolutionY; ++y) {
+        Render->Chars[y] = Render2->Chars[y];
+    }
+
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].Red,
-            Render->Pixel[y][x].Green, Render->Pixel[y][x].Blue);
-            putchar(Render->Chars[y][x]);
-            putchar(Render->Chars[y][x]);
-            printf("\x1b[0m");
+            Render->Pixel[y][x].Red   = Render2->Pixel[y][x].Red;
+            Render->Pixel[y][x].Green = Render2->Pixel[y][x].Green;
+            Render->Pixel[y][x].Blue  = Render2->Pixel[y][x].Blue;
+            Render->Pixel[y][x].Alpha = Render2->Pixel[y][x].Alpha;
         }
-        putchar('\n');
     }
+
+    CR_DestroyRender(Render2);
 }
 
 //Replace Color and char at given position
