@@ -63,7 +63,8 @@
 #define CRC_DARKBROWN  (CR_Color){ 76, 63, 47, 255}      // Dark Brown
 #define CRC_MAGENTA    (CR_Color){ 255, 0, 255, 255}     // Magenta
 
-#define Vector2_Zero (Vector2){0} 
+#define Vector2_Zero (Vector2){0}
+#define Vector2i_Zero (Vector2i){0}  
 
 typedef struct CR_Color {
     uint8_t Red;

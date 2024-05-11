@@ -120,8 +120,21 @@ void CR_RenderFill(CR_Render *Render, char Character, CR_Color Color) {
 
 //Prints Graphics/Display You know what i mean
 void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint) {
-    for(uint32_t y=0; y < Render->ResolutionY || y < (uint32_t) SizeofPrint.y; ++y) {
-        for(uint32_t x=0; x < Render->ResolutionX || x < (uint32_t) SizeofPrint.x; ++x) {
+    if(SizeofPrint.x > 0 || SizeofPrint.y > 0) {
+        for(uint32_t y=0; y < Render->ResolutionY && y < (uint32_t) SizeofPrint.y; ++y) {
+            for(uint32_t x=0; x < Render->ResolutionX && x < (uint32_t) SizeofPrint.x; ++x) {
+                printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].Red,
+                Render->Pixel[y][x].Green, Render->Pixel[y][x].Blue);
+                putchar(Render->Chars[y][x]);
+                printf("\x1b[0m");
+            }
+            putchar('\n');
+        }
+        return;
+    }
+
+    for(uint32_t y=0; y < Render->ResolutionY; ++y) {
+        for(uint32_t x=0; x < Render->ResolutionX; ++x) {
             printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].Red,
             Render->Pixel[y][x].Green, Render->Pixel[y][x].Blue);
             putchar(Render->Chars[y][x]);
@@ -132,38 +145,48 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint)
 }
 
 void CR_RenderStretch(CR_Render *Render) {
-    CR_Render *Render2;
-    CR_InitRender(Render2, Render->ResolutionX*2, Render->ResolutionY*2);
+    CR_Render Render2;
+    CR_InitRender(&Render2, Render->ResolutionX*2, Render->ResolutionY);
 
-    uint32_t dx=0,dy=0;
+    uint32_t dx=0;
     
-    for(uint32_t y=0;y < Render->ResolutionY-2; ++y) {
+    for(uint32_t y=0;y < Render->ResolutionY; ++y) {
         dx=0;
-        for(uint32_t x=0;x < Render->ResolutionX-2; ++x) {
-            Render2->Chars[dy][dx] = Render->Chars[y][x];
-            Render2->Chars[dy][dx+1] = Render->Chars[y][x];
+        for(uint32_t x=0;x < Render->ResolutionX; ++x) {
+            Render2.Chars[y][dx] = Render->Chars[y][x];
+            Render2.Chars[y][dx+1] = Render->Chars[y][x];
+
+            Render2.Pixel[y][dx].Red   = Render->Pixel[y][x].Red;
+            Render2.Pixel[y][dx].Green = Render->Pixel[y][x].Green;
+            Render2.Pixel[y][dx].Blue  = Render->Pixel[y][x].Blue;
+            Render2.Pixel[y][dx].Alpha = Render->Pixel[y][x].Alpha;
+
+            Render2.Pixel[y][dx+1].Red   = Render->Pixel[y][x].Red;
+            Render2.Pixel[y][dx+1].Green = Render->Pixel[y][x].Green;
+            Render2.Pixel[y][dx+1].Blue  = Render->Pixel[y][x].Blue;
+            Render2.Pixel[y][dx+1].Alpha = Render->Pixel[y][x].Alpha;
+
             dx+=2;
         }
-        dy+=2;
     }
 
     CR_DestroyRender(Render);
-    CR_InitRender(Render, Render2->ResolutionX,Render2->ResolutionY);
+    CR_InitRender(Render, Render2.ResolutionX,Render2.ResolutionY);
 
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
-        Render->Chars[y] = Render2->Chars[y];
+        Render->Chars[y] = Render2.Chars[y];
     }
 
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            Render->Pixel[y][x].Red   = Render2->Pixel[y][x].Red;
-            Render->Pixel[y][x].Green = Render2->Pixel[y][x].Green;
-            Render->Pixel[y][x].Blue  = Render2->Pixel[y][x].Blue;
-            Render->Pixel[y][x].Alpha = Render2->Pixel[y][x].Alpha;
+            Render->Pixel[y][x].Red   = Render2.Pixel[y][x].Red;
+            Render->Pixel[y][x].Green = Render2.Pixel[y][x].Green;
+            Render->Pixel[y][x].Blue  = Render2.Pixel[y][x].Blue;
+            Render->Pixel[y][x].Alpha = Render2.Pixel[y][x].Alpha;
         }
     }
 
-    CR_DestroyRender(Render2);
+    CR_DestroyRender(&Render2);
 }
 
 //Replace Color and char at given position
@@ -204,18 +227,11 @@ void CR_RenderDrawText(CR_Render *Render, int32_t x, int32_t y, int32_t MaxWidth
 } 
 
 void CR_RenderDrawRect(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color) {
-  CR_RenderSetPixel(Render, x, y, Char, Color);
-  CR_RenderSetPixel(Render, x, y + h, Char, Color);
-  
-  for(int32_t lx = x + 1; lx < x + w; ++lx) {
-    CR_RenderSetPixel(Render, lx, y, Char, Color);
-    CR_RenderSetPixel(Render, lx, y + h, Char, Color);
-  }
-  for(int32_t ly = y + 1; ly < y + h; ++ly) {
-    CR_RenderSetPixel(Render, x, ly, Char, Color);
-    CR_RenderSetPixel(Render, x + w, ly, Char, Color);
-  }
-  CR_RenderSetPixel(Render, x + w, y+h, Char, Color);
+    for(int32_t CurentY = y; CurentY < y + h; ++CurentY) {
+        for(int32_t CurentX = x; CurentX < x + w; ++CurentX) {
+            CR_RenderSetPixel(Render,CurentX,CurentY,Char,Color);
+        }
+    }
 }
 
 void CR_RenderDrawRectNP(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color) {
