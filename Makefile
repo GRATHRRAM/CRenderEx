@@ -1,24 +1,21 @@
 CC=gcc
 FLAGS=-O3 -Wall -Wextra -g -c -lm
-BUILD_DIR=Build
-SRC_DIR=src
+BUILD_DIR=./Build
+SRC_DIR=./src
 
-all: CopyToBuild
+all: CRenderEx.o CRInput.o libCRInput.a libCRenderEx.a
 
 CRenderEx.o: $(SRC_DIR)/CRenderEx.c
-	$(CC) $(FLAGS) $(SRC_DIR)/CRenderEx.c -o CRenderEx.o
+	$(CC) $(FLAGS) $(SRC_DIR)/CRenderEx.c -o $(BUILD_DIR)/CRenderEx.o
 
 CRInput.o: $(SRC_DIR)/CRInput.c
-	$(CC) $(FLAGS) $(SRC_DIR)/CRInput.c -o CRInput.o
+	$(CC) $(FLAGS) $(SRC_DIR)/CRInput.c -o $(BUILD_DIR)/CRInput.o
 
-libCRenderEx.a: CRenderEx.o 
-	ar ruv libCRenderEx.a CRenderEx.o
+libCRenderEx.a: $(BUILD_DIR)/CRenderEx.o 
+	ar ruv $(BUILD_DIR)/libCRenderEx.a $(BUILD_DIR)/CRenderEx.o
 
-libCRInput.a: CRInput.o
-	ar ruv libCRInput.a CRInput.o
+libCRInput.a: $(BUILD_DIR)/CRInput.o
+	ar ruv $(BUILD_DIR)/libCRInput.a $(BUILD_DIR)/CRInput.o
 
-CopyToBuild: libCRInput.a libCRenderEx.a
-	cp *.a $(BUILD_DIR)/
- 
 clean: 
-	rm *.a *.o
+	rm $(BUILD_DIR)/*.a $(BUILD_DIR)/*.o

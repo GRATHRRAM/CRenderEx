@@ -145,7 +145,7 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint)
 }
 
 void CR_RenderStretch(CR_Render *Render) {
-    CR_Render Render2;
+    CR_Render Render2 = {0};
     CR_InitRender(&Render2, Render->ResolutionX*2, Render->ResolutionY);
 
     uint32_t dx=0;
