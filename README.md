@@ -1,4 +1,5 @@
-![teser](https://github.com/GRATHRRAM/CRenderEx/assets/101575465/341e6da8-fdaf-425f-b8d8-5e0b38764247)
+![Zrzut ekranu_20240708_171237](https://github.com/GRATHRRAM/CRenderEx/assets/101575465/b306bc6d-f6c3-44e9-acb7-9d9321f3c56d)
+
 # CRenderEx -> C(Console)Render(Graphics)Ex(Expanded)
 CRenderEx Its a lib for Simplyfing Basic Grapics in Terminal
 Old C Render Was Messy so i made new repository for new updates.</br>
