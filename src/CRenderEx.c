@@ -19,10 +19,10 @@
 #define CR_PI 3.1415926
 
 typedef struct CR_Color {
-    uint8_t Red;
-    uint8_t Green;
-    uint8_t Blue;
-    uint8_t Alpha;
+    uint8_t r;//Red;
+    uint8_t g;//Green;
+    uint8_t b;//Blue;
+    uint8_t a;//Alpha;
 } CR_Color;
 
 typedef struct CR_Render {
@@ -45,11 +45,11 @@ typedef struct Vector2i {
 typedef struct CR_Rect {
     int32_t x;
     int32_t y;
-    int32_t Width;
-    int32_t Height;
-    char Char;
-    CR_Color Color;
+    int32_t w; //Width
+    int32_t h; //Height
 } CR_Rect;
+
+typedef CR_Rect CR_Elipse;
 
 //If No Errors Returns 0 Else errsig (All Functions!!! if not void)
 //If you see any error please fix or report. Thanks!!!
@@ -65,25 +65,30 @@ void CR_RenderSetPixel(CR_Render *Render, int32_t PositionX, int32_t PositionY, 
 void CR_RenderDrawLine(CR_Render *Render, char Character,CR_Color Color, int32_t StartX, int32_t StartY, int32_t EndX, int32_t EndY);//Draws a line
 void CR_RenderDrawRect(CR_Render *Render, int32_t x, int32_t y, int32_t h, int32_t w, char Char, CR_Color Color);//Draws Only outlines of Rect
 void CR_RenderDrawRectNP(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color);//Draws Rect With Normal Proporcion
-void CR_RenderDrawRectFill(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color);//Overwrites render with rect
+void CR_RenderDrawRectFill(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color);//draws a rect
+void CR_RenderDrawRectStr(CR_Render *Render, CR_Rect Rect, char Character, CR_Color Color);//draws a rect
 void CR_RenderDrawText(CR_Render *Render, int32_t x, int32_t y, int32_t MaxWidth, int32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
 void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);//Draws only outlines of circle
 void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);//Draws Circle And fills it
-void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
-void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
+void CR_RenderDrawElipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
+void CR_RenderDrawElipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
+void CR_RenderDrawElipseStr(CR_Render *Render, CR_Elipse Elipse, char Character, CR_Color Color);//draws a elipse
 
-void CR_Rect2Render(CR_Render *Render, CR_Rect Rect);//Overwrites render with rect
+void CR_RenderDrawRectStr(CR_Render *Render, CR_Rect Rect, char Character, CR_Color Color);//draws a rect
 
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
 bool CR_ColisionRect(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2 , int32_t y2, int32_t w2, int32_t h2);
+bool CR_ColisionRectSH(CR_Rect Rect1, CR_Rect Rect2);
 bool CR_ColisionElipse(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2 , int32_t y2, int32_t w2, int32_t h2);
+bool CR_ColisionElipseSH(CR_Elipse Elipse1, CR_Elipse Elipse2);
+
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
 float CR_Math_Deg2Rad(float Deg);
 float CR_Math_Rad2Deg(float Rad);
-Vector2 CR_Math_RotateLine(Vector2 Start, Vector2 End, double RadAngle);
+Vector2 CR_Math_RotateLine(Vector2 Start, Vector2 End, float RadAngle);
 
 //initiates Render
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
@@ -123,8 +128,8 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint)
     if(SizeofPrint.x > 0 || SizeofPrint.y > 0) {
         for(uint32_t y=0; y < Render->ResolutionY && y < (uint32_t) SizeofPrint.y; ++y) {
             for(uint32_t x=0; x < Render->ResolutionX && x < (uint32_t) SizeofPrint.x; ++x) {
-                printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].Red,
-                Render->Pixel[y][x].Green, Render->Pixel[y][x].Blue);
+                printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].r,
+                Render->Pixel[y][x].g, Render->Pixel[y][x].b);
                 putchar(Render->Chars[y][x]);
                 printf("\x1b[0m");
             }
@@ -135,8 +140,8 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint)
 
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].Red,
-            Render->Pixel[y][x].Green, Render->Pixel[y][x].Blue);
+            printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].r,
+            Render->Pixel[y][x].g, Render->Pixel[y][x].b);
             putchar(Render->Chars[y][x]);
             printf("\x1b[0m");
         }
@@ -156,15 +161,15 @@ void CR_RenderStretch(CR_Render *Render) {
             Render2.Chars[y][dx] = Render->Chars[y][x];
             Render2.Chars[y][dx+1] = Render->Chars[y][x];
 
-            Render2.Pixel[y][dx].Red   = Render->Pixel[y][x].Red;
-            Render2.Pixel[y][dx].Green = Render->Pixel[y][x].Green;
-            Render2.Pixel[y][dx].Blue  = Render->Pixel[y][x].Blue;
-            Render2.Pixel[y][dx].Alpha = Render->Pixel[y][x].Alpha;
+            Render2.Pixel[y][dx].r = Render->Pixel[y][x].r;
+            Render2.Pixel[y][dx].g = Render->Pixel[y][x].g;
+            Render2.Pixel[y][dx].b = Render->Pixel[y][x].b;
+            Render2.Pixel[y][dx].a = Render->Pixel[y][x].a;
 
-            Render2.Pixel[y][dx+1].Red   = Render->Pixel[y][x].Red;
-            Render2.Pixel[y][dx+1].Green = Render->Pixel[y][x].Green;
-            Render2.Pixel[y][dx+1].Blue  = Render->Pixel[y][x].Blue;
-            Render2.Pixel[y][dx+1].Alpha = Render->Pixel[y][x].Alpha;
+            Render2.Pixel[y][dx+1].r = Render->Pixel[y][x].r;
+            Render2.Pixel[y][dx+1].g = Render->Pixel[y][x].g;
+            Render2.Pixel[y][dx+1].b = Render->Pixel[y][x].b;
+            Render2.Pixel[y][dx+1].a = Render->Pixel[y][x].a;
 
             dx+=2;
         }
@@ -179,10 +184,10 @@ void CR_RenderStretch(CR_Render *Render) {
 
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            Render->Pixel[y][x].Red   = Render2.Pixel[y][x].Red;
-            Render->Pixel[y][x].Green = Render2.Pixel[y][x].Green;
-            Render->Pixel[y][x].Blue  = Render2.Pixel[y][x].Blue;
-            Render->Pixel[y][x].Alpha = Render2.Pixel[y][x].Alpha;
+            Render->Pixel[y][x].r = Render2.Pixel[y][x].r;
+            Render->Pixel[y][x].g = Render2.Pixel[y][x].g;
+            Render->Pixel[y][x].b = Render2.Pixel[y][x].b;
+            Render->Pixel[y][x].a = Render2.Pixel[y][x].a;
         }
     }
 
@@ -308,7 +313,7 @@ void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char C
     }
 }
 
-void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color) {
+void CR_RenderDrawElipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color) {
     int lx = 0, ly = h;
     long a_sqr = w * w;
     long b_sqr = h * h;
@@ -352,8 +357,8 @@ void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Ch
     }
 }
 
-void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color) {
-  CR_RenderDrawEllipse(Render, x, y, w, h, Char, Color);
+void CR_RenderDrawElipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color) {
+  CR_RenderDrawElipse(Render, x, y, w, h, Char, Color);
     for (int ly = y - h; ly <= y + h; ly++) {
         for (int lx = x - w; lx <= x + w; lx++) {
             if ((lx - x)*(lx - x) / (float)(w * w) + (ly - y)*(ly - y) / (float)(h * h) <= 1) {
@@ -363,11 +368,15 @@ void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, cha
     }
 }
 
+void CR_RenderDrawElipseStr(CR_Render *Render, CR_Elipse Elipse, char Character, CR_Color Color) {
+    CR_RenderDrawRectFill(Render, Elipse.x, Elipse.y, Elipse.w, Elipse.h, Character, Color);
+}
+
 //Overwrites render with rect
-void CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
-    for(int32_t y = Rect.y; y - Rect.y < Rect.Height; ++y) {
-        for(int32_t x = Rect.x; x - Rect.x < Rect.Width; ++x) {
-           CR_RenderSetPixel(Render, x, y, Rect.Char, Rect.Color);
+void CR_RenderDrawRectStr(CR_Render *Render, CR_Rect Rect, char Character, CR_Color Color) {
+    for(int32_t y = Rect.y; y - Rect.y < Rect.h; ++y) {
+        for(int32_t x = Rect.x; x - Rect.x < Rect.w; ++x) {
+           CR_RenderSetPixel(Render, x, y, Character, Color);
         }
     }
 }
@@ -375,13 +384,13 @@ void CR_Rect2Render(CR_Render *Render, CR_Rect Rect) {
 //calculates Transparency
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background) {
     CR_Color buff;
-    float alpha = Curent.Alpha / 255.0;
+    float alpha = Curent.a / 255.0;
     float invAlpha = 1.0 - alpha;
 
-    buff.Red   = (uint8_t) (Curent.Red * alpha + Background.Red * invAlpha);
-    buff.Green = (uint8_t) (Curent.Green * alpha + Background.Green * invAlpha);
-    buff.Blue  = (uint8_t) (Curent.Blue* alpha + Background.Blue * invAlpha);
-    buff.Alpha = 255;
+    buff.r = (uint8_t) (Curent.r * alpha + Background.r * invAlpha);
+    buff.g = (uint8_t) (Curent.g * alpha + Background.g * invAlpha);
+    buff.b = (uint8_t) (Curent.b * alpha + Background.b * invAlpha);
+    buff.a = 255;
     return buff;
 }
 
@@ -391,14 +400,28 @@ bool CR_ColisionRect(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2
         y1 + h1 < y2 ||
         y2 + h2 < y1) {
         return false;
-    } else {
-        return true;
-    }
+    } else return true;
+}
+
+bool CR_ColisionRectSH(CR_Rect Rect1, CR_Rect Rect2) {
+    if (Rect1.x + Rect1.w < Rect2.x ||
+        Rect2.x + Rect2.w < Rect1.x ||
+        Rect1.y + Rect1.h < Rect2.y ||
+        Rect2.y + Rect2.h < Rect1.y) {
+        return false;
+    } else return true;
 }
 
 bool CR_ColisionElipse(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2 , int32_t y2, int32_t w2, int32_t h2) {
     float distance = sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
     float sumRadii = w1 + h1 + w2 + h2;
+    if (distance <= sumRadii) return true;
+    else return false;
+}
+
+bool CR_ColisionElipseSH(CR_Elipse Elipse1, CR_Elipse Elipse2) {
+    float distance = sqrt(pow(Elipse2.x - Elipse1.x, 2) + pow(Elipse2.y - Elipse1.y, 2));
+    float sumRadii = Elipse1.w + Elipse1.h + Elipse2.w + Elipse2.h;
     if (distance <= sumRadii) return true;
     else return false;
 }
@@ -420,9 +443,9 @@ inline float CR_Math_Rad2Deg(float Rad) {
   return (float) Rad * (180.0 / CR_PI);
 }
 
-Vector2 CR_Math_RotateLine(Vector2 Start, Vector2 End, double Angle) {
+Vector2 CR_Math_RotateLine(Vector2 Start, Vector2 End, float RadAngle) {
   int dx = End.x - Start.x, dy = End.y - Start.y;
-  End.x = dx * cos(Angle) - dy * sin(Angle) + Start.x;
-  End.y = dx * sin(Angle) + dy * cos(Angle) + Start.y;
+  End.x = dx * cos(RadAngle) - dy * sin(RadAngle) + Start.x;
+  End.y = dx * sin(RadAngle) + dy * cos(RadAngle) + Start.y;
   return End;
 }
