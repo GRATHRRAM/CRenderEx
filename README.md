@@ -8,7 +8,7 @@ Old rep: https://github.com/scriptguy1/CRender</br>
 </br>
 # Compilation
 ## Lib
-To Compiel lib type make and if you on linux after compilation you can type make install to install
+To Compile lib type make and if you on linux after compilation you can type make install to install
 ## Exec
 cc main.c -lm -lCRenderEx -lCRInput</br>
 (Compiler) main_file -l(name of lib what you use) (include CRInput if you use it)</br>
