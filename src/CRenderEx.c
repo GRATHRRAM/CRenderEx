@@ -58,37 +58,56 @@ uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t Resoluti
 void CR_DestroyRender(CR_Render *Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
-void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint); //Prints Graphics/Display You know what i mean
-void CR_RenderStretch(CR_Render *Render);//from 1:1 to 2:1 (normal proporcions for color rendering use text after stretch)
+void CR_RenderPrint(CR_Render *Render, uint8_t CR_ColorMode, Vector2i SizeofPrint); //Prints Graphics/Display You know what i mean
+void CR_RenderPrintStretch(CR_Render *Render, uint8_t CR_ColorMode, Vector2i SizeofPrint);//from 1:1 to 2:1 (normal proporcions for color rendering (use text after stretch))
+
 
 void CR_RenderSetPixel(CR_Render *Render, int32_t PositionX, int32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
+CR_Color CR_RenderGetPixelColor(CR_Render *Render, int32_t PositionX, int32_t PositionY);
+char CR_RenderGetPixelChar(CR_Render *Render, int32_t PositionX, int32_t PositionY);
+
+
 void CR_RenderDrawLine(CR_Render *Render, char Character,CR_Color Color, int32_t StartX, int32_t StartY, int32_t EndX, int32_t EndY);//Draws a line
+void CR_RenderDrawLineVec2i(CR_Render *Render, char Character,CR_Color Color, Vector2i Start, Vector2i End);//Draws a line with vector2i
+void CR_RenderDrawLineVec2(CR_Render *Render, char Character,CR_Color Color, Vector2 Start, Vector2 End);//Draws a line with vector2
+
 void CR_RenderDrawRect(CR_Render *Render, int32_t x, int32_t y, int32_t h, int32_t w, char Char, CR_Color Color);//Draws Only outlines of Rect
 void CR_RenderDrawRectNP(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color);//Draws Rect With Normal Proporcion
 void CR_RenderDrawRectFill(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color);//draws a rect
 void CR_RenderDrawRectStr(CR_Render *Render, CR_Rect Rect, char Character, CR_Color Color);//draws a rect
+
 void CR_RenderDrawText(CR_Render *Render, int32_t x, int32_t y, int32_t MaxWidth, int32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
+
 void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);//Draws only outlines of circle
 void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);//Draws Circle And fills it
+
 void CR_RenderDrawElipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
 void CR_RenderDrawElipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
 void CR_RenderDrawElipseStr(CR_Render *Render, CR_Elipse Elipse, char Character, CR_Color Color);//draws a elipse
 
-void CR_RenderDrawRectStr(CR_Render *Render, CR_Rect Rect, char Character, CR_Color Color);//draws a rect
+
 
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
+
+
 bool CR_ColisionRect(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2 , int32_t y2, int32_t w2, int32_t h2);
 bool CR_ColisionRectSH(CR_Rect Rect1, CR_Rect Rect2);
+
 bool CR_ColisionElipse(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2 , int32_t y2, int32_t w2, int32_t h2);
 bool CR_ColisionElipseSH(CR_Elipse Elipse1, CR_Elipse Elipse2);
 
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
+
 float CR_Math_Deg2Rad(float Deg);
 float CR_Math_Rad2Deg(float Rad);
 Vector2 CR_Math_RotateLine(Vector2 Start, Vector2 End, float RadAngle);
+
+
+
+
 
 //initiates Render
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY) {
@@ -124,11 +143,11 @@ void CR_RenderFill(CR_Render *Render, char Character, CR_Color Color) {
 }
 
 //Prints Graphics/Display You know what i mean
-void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint) {
+void CR_RenderPrint(CR_Render *Render, uint8_t CR_ColorMode, Vector2i SizeofPrint) {
     if(SizeofPrint.x > 0 || SizeofPrint.y > 0) {
         for(uint32_t y=0; y < Render->ResolutionY && y < (uint32_t) SizeofPrint.y; ++y) {
             for(uint32_t x=0; x < Render->ResolutionX && x < (uint32_t) SizeofPrint.x; ++x) {
-                printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].r,
+                printf("\x1b[%d;2;%d;%d;%dm", CR_ColorMode, Render->Pixel[y][x].r,
                 Render->Pixel[y][x].g, Render->Pixel[y][x].b);
                 putchar(Render->Chars[y][x]);
                 printf("\x1b[0m");
@@ -140,7 +159,7 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint)
 
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            printf("\x1b[%d;2;%d;%d;%dm", backGround, Render->Pixel[y][x].r,
+            printf("\x1b[%d;2;%d;%d;%dm", CR_ColorMode, Render->Pixel[y][x].r,
             Render->Pixel[y][x].g, Render->Pixel[y][x].b);
             putchar(Render->Chars[y][x]);
             printf("\x1b[0m");
@@ -149,49 +168,31 @@ void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint)
     }
 }
 
-void CR_RenderStretch(CR_Render *Render) {
-    CR_Render Render2 = {0};
-    CR_InitRender(&Render2, Render->ResolutionX*2, Render->ResolutionY);
-
-    uint32_t dx=0;
-    
-    for(uint32_t y=0;y < Render->ResolutionY; ++y) {
-        dx=0;
-        for(uint32_t x=0;x < Render->ResolutionX; ++x) {
-            Render2.Chars[y][dx] = Render->Chars[y][x];
-            Render2.Chars[y][dx+1] = Render->Chars[y][x];
-
-            Render2.Pixel[y][dx].r = Render->Pixel[y][x].r;
-            Render2.Pixel[y][dx].g = Render->Pixel[y][x].g;
-            Render2.Pixel[y][dx].b = Render->Pixel[y][x].b;
-            Render2.Pixel[y][dx].a = Render->Pixel[y][x].a;
-
-            Render2.Pixel[y][dx+1].r = Render->Pixel[y][x].r;
-            Render2.Pixel[y][dx+1].g = Render->Pixel[y][x].g;
-            Render2.Pixel[y][dx+1].b = Render->Pixel[y][x].b;
-            Render2.Pixel[y][dx+1].a = Render->Pixel[y][x].a;
-
-            dx+=2;
+void CR_RenderPrintStretch(CR_Render *Render, uint8_t CR_ColorMode, Vector2i SizeofPrint) {
+    if(SizeofPrint.x > 0 || SizeofPrint.y > 0) {
+        for(uint32_t y=0; y < Render->ResolutionY && y < (uint32_t) SizeofPrint.y; ++y) {
+            for(uint32_t x=0; x < Render->ResolutionX && x < (uint32_t) SizeofPrint.x; ++x) {
+                printf("\x1b[%d;2;%d;%d;%dm", CR_ColorMode, Render->Pixel[y][x].r,
+                Render->Pixel[y][x].g, Render->Pixel[y][x].b);
+                putchar(Render->Chars[y][x]);
+                putchar(Render->Chars[y][x]);
+                printf("\x1b[0m");
+            }
+            putchar('\n');
         }
-    }
-
-    CR_DestroyRender(Render);
-    CR_InitRender(Render, Render2.ResolutionX,Render2.ResolutionY);
-
-    for(uint32_t y=0; y < Render->ResolutionY; ++y) {
-        Render->Chars[y] = Render2.Chars[y];
+        return;
     }
 
     for(uint32_t y=0; y < Render->ResolutionY; ++y) {
         for(uint32_t x=0; x < Render->ResolutionX; ++x) {
-            Render->Pixel[y][x].r = Render2.Pixel[y][x].r;
-            Render->Pixel[y][x].g = Render2.Pixel[y][x].g;
-            Render->Pixel[y][x].b = Render2.Pixel[y][x].b;
-            Render->Pixel[y][x].a = Render2.Pixel[y][x].a;
+            printf("\x1b[%d;2;%d;%d;%dm", CR_ColorMode, Render->Pixel[y][x].r,
+            Render->Pixel[y][x].g, Render->Pixel[y][x].b);
+            putchar(Render->Chars[y][x]);
+            putchar(Render->Chars[y][x]);
+            printf("\x1b[0m");
         }
+        putchar('\n');
     }
-
-    CR_DestroyRender(&Render2);
 }
 
 //Replace Color and char at given position
@@ -202,6 +203,14 @@ void CR_RenderSetPixel(CR_Render *Render, int32_t PositionX, int32_t PositionY, 
         return;
     Render->Pixel[PositionY][PositionX] = CR_ApplayAlpha(Color, Render->Pixel[PositionY][PositionX]);
     Render->Chars[PositionY][PositionX] = Character;
+}
+
+CR_Color CR_RenderGetPixelColor(CR_Render *Render, int32_t PositionX, int32_t PositionY) {
+    return Render->Pixel[PositionY][PositionX];
+}
+
+char CR_RenderGetPixelChar(CR_Render *Render, int32_t PositionX, int32_t PositionY) {
+    return Render->Chars[PositionY][PositionX];
 }
 
 //draws a line
@@ -217,6 +226,14 @@ void CR_RenderDrawLine(CR_Render *Render, char Character,CR_Color Color, int32_t
     if (e2 >= dy) { err += dy; StartX += sx; } /* e_xy+e_x > 0 */
     if (e2 <= dx) { err += dx; StartY += sy; } /* e_xy+e_y < 0 */
   }
+}
+
+void CR_RenderDrawLineVec2i(CR_Render *Render, char Character,CR_Color Color, Vector2i Start, Vector2i End) {
+    CR_RenderDrawLine(Render,Character,Color,Start.x,Start.y,End.x,End.y);
+}
+
+void CR_RenderDrawLineVec2(CR_Render *Render, char Character,CR_Color Color, Vector2 Start, Vector2 End) {
+    CR_RenderDrawLine(Render,Character,Color,(int32_t)Start.x,(int32_t)Start.y,(int32_t)End.x,(int32_t)End.y);
 }
 
 void CR_RenderDrawText(CR_Render *Render, int32_t x, int32_t y, int32_t MaxWidth, int32_t MaxHeight, const char* Text, CR_Color Color) {

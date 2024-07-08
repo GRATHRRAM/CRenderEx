@@ -97,38 +97,56 @@ typedef struct CR_Rect {
     int32_t h; //Height
 } CR_Rect;
 
+typedef CR_Rect CR_Elipse;
+
 //If No Errors Returns 0 Else errsig (All Functions!!! if not void)
-//If you see any bug please fix or report. Thanks!!!
+//If you see any error please fix or report. Thanks!!!
 
 uint8_t CR_InitRender(CR_Render *Render, uint32_t ResolutionX, uint32_t ResolutionY); //Sets Resolution of Render and allocs space
 void CR_DestroyRender(CR_Render *Render);//Frees Render (After that you can Init Another Render)
 
 void CR_RenderFill (CR_Render *Render, char Character, CR_Color Color); //Fills Render With Color
-void CR_RenderPrint(CR_Render *Render, uint8_t backGround, Vector2i SizeofPrint); //Prints Graphics/Display You know what i mean
-void CR_RenderStretch(CR_Render *Render);//from 1:1 to 2:1 (normal proporcions for color rendering use text after stretch)
+void CR_RenderPrint(CR_Render *Render, uint8_t CR_ColorMode, Vector2i SizeofPrint); //Prints Graphics/Display You know what i mean
+void CR_RenderPrintStretch(CR_Render *Render, uint8_t CR_ColorMode, Vector2i SizeofPrint);//from 1:1 to 2:1 (normal proporcions for color rendering (use text after stretch))
+
 
 void CR_RenderSetPixel(CR_Render *Render, int32_t PositionX, int32_t PositionY, char Character, CR_Color Color);//Replace Character at given position
+CR_Color CR_RenderGetPixelColor(CR_Render *Render, int32_t PositionX, int32_t PositionY);
+char CR_RenderGetPixelChar(CR_Render *Render, int32_t PositionX, int32_t PositionY);
+
+
 void CR_RenderDrawLine(CR_Render *Render, char Character,CR_Color Color, int32_t StartX, int32_t StartY, int32_t EndX, int32_t EndY);//Draws a line
+void CR_RenderDrawLineVec2i(CR_Render *Render, char Character,CR_Color Color, Vector2i Start, Vector2i End);//Draws a line with vector2i
+void CR_RenderDrawLineVec2(CR_Render *Render, char Character,CR_Color Color, Vector2 Start, Vector2 End);//Draws a line with vector2
+
 void CR_RenderDrawRect(CR_Render *Render, int32_t x, int32_t y, int32_t h, int32_t w, char Char, CR_Color Color);//Draws Only outlines of Rect
 void CR_RenderDrawRectNP(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color);//Draws Rect With Normal Proporcion
 void CR_RenderDrawRectFill(CR_Render *Render, int32_t x, int32_t y, int32_t w, int32_t h, char Char, CR_Color Color);//draws a rect
+void CR_RenderDrawRectStr(CR_Render *Render, CR_Rect Rect, char Character, CR_Color Color);//draws a rect
+
 void CR_RenderDrawText(CR_Render *Render, int32_t x, int32_t y, int32_t MaxWidth, int32_t MaxHeight, const char* Text, CR_Color Color);//draws Text in render
+
 void CR_RenderDrawCircle(CR_Render *Render ,int x, int y, int Radius, char Char, CR_Color Color);//Draws only outlines of circle
 void CR_RenderDrawCircleFill(CR_Render *Render, int x, int y, int Radius, char Char, CR_Color Color);//Draws Circle And fills it
-void CR_RenderDrawEllipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
-void CR_RenderDrawEllipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
 
-void CR_Rect2Render(CR_Render *Render, CR_Rect Rect, char Character, CR_Color Color);//draws a rect
+void CR_RenderDrawElipse(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws only outlines of Elipse
+void CR_RenderDrawElipseFill(CR_Render *Render, int x, int y, int w, int h, char Char, CR_Color Color);//Draws elipse and fills it
+void CR_RenderDrawElipseStr(CR_Render *Render, CR_Elipse Elipse, char Character, CR_Color Color);//draws a elipse
+
 
 CR_Color CR_ApplayAlpha(CR_Color Curent, CR_Color Background);//calculates Transparency
 
+
 bool CR_ColisionRect(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2 , int32_t y2, int32_t w2, int32_t h2);
 bool CR_ColisionRectSH(CR_Rect Rect1, CR_Rect Rect2);
+
 bool CR_ColisionElipse(int32_t x1 , int32_t y1, int32_t w1, int32_t h1, int32_t x2 , int32_t y2, int32_t w2, int32_t h2);
+bool CR_ColisionElipseSH(CR_Elipse Elipse1, CR_Elipse Elipse2);
+
 
 void CR_GetErrDesc(uint8_t Error); //prints description of error
 
-float CR_Math_Deg2Rad(float Deg);
-float CR_Math_Rad2Deg(float Rad);
-Vector2 CR_Math_RotateLine(Vector2 Start, Vector2 End, float RadAngle);
+float CR_Math_Deg2Rad(float Deg);//degres to radinan
+float CR_Math_Rad2Deg(float Rad);//radinas to degres
+Vector2 CR_Math_RotateLine(Vector2 Start, Vector2 End, float RadAngle);//Rotates around Vec2 Start and returns modified end
 #endif //!CRENDEREX_H
