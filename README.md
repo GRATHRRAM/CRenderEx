@@ -8,13 +8,10 @@ Old rep: https://github.com/scriptguy1/CRender</br>
 </br>
 # Compilation
 ## Lib
-To compile lib type make or ./build.sh</br>
-make - builds things that changed</br>
-make all - builds all</br>
-make clean - is deleteing .o files</br>
+To Compiel lib type make and if you on linux after compilation you can type make install to install
 ## Exec
-cc main.c -o main -L. -lCRenderEx -lCRInput</br>
-(Compiler) main_file -L.(include libs in curent folder) -l(name of lib what you use) (include CRInput if you use it)</br>
+cc main.c -lm -lCRenderEx -lCRInput</br>
+(Compiler) main_file -l(name of lib what you use) (include CRInput if you use it)</br>
 </br>
 </br>
 # Exemples
